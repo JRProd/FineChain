@@ -17,7 +17,7 @@ def hello_world():
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
-    temp = f'GET-Gets the user with id {user_id}'
+    temp = f'GET-Gets the user with id ' + str(user_id)
     return temp
 
 
