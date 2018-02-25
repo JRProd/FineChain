@@ -3,13 +3,17 @@
 from flask import Flask
 app = Flask(__name__)
 
-# These are only test methods
+
+####################
+## TEST Endpoints ##
+####################
 @app.route('/')
 def home():
     return "Homepage"
 @app.route('/isrunning')
 def isRunning():
     return 'Yes, the flask app is running!'
+
 
 ####################
 ## AUTH Endpoints ##
@@ -33,31 +37,31 @@ def updateCompany():
         return 'PUT-Update a company'
 
 @app.route('/company/<int:company_id>', methods=['GET'])
-def getCompany():
+def getCompany(company_id):
     returnVal = 'GET-Gets the company with id ' + str(company_id)
     return returnVal
 
 @app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
-def addUserToCompany():
+def addUserToCompany(company_id):
     if request.method == 'POST':
         return 'POST-Add user to a company'
     else:
         return 'DELETE-Remove a user from a company'
 
 @app.route('/company/<int:company_id>/fullchain', methods=['GET'])
-def getFullchain():
+def getFullchain(company_id):
     return 'GET-Gets the fullchain'
 
 @app.route('/company/<int:company_id>/post', methods=['POST'])
-def postTransaction():
+def postTransaction(company_id):
     return 'POST-Add a transaction to a company'
 
 @app.route('/company/<int:company_id>/update', methods=['GET'])
-def getUpdatedBlockchain():
+def getUpdatedBlockchain(company_id):
     return 'GET-Gets the updates from the blockchain'
 
 @app.route('/company/<int:company_id>/verify', methods=['GET'])
-def verifyBlockchain():
+def verifyBlockchain(company_id):
     return 'GET-Verify blockchain for company'
 
 
@@ -75,9 +79,6 @@ def updateUser():
 def getUser(user_id):
     returnVal = 'GET-Gets the user with id ' + str(user_id)
     return returnVal
-
-
-
 
 
 if __name__ == '__main__':
