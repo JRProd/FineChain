@@ -68,7 +68,7 @@ def verifyBlockchain():
 def updateUser():
     if request.method == 'POST':
         return 'POST-Create a new user here'
-	else:
+    else:
         return 'PUT-Update a user'
 
 @app.route('/user/<int:user_id>', methods=['GET'])
