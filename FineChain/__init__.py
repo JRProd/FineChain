@@ -18,7 +18,7 @@ def isRunning():
 def authenticate():
     if request.method == 'POST':
         return 'POST-Login'
-    else
+    else:
         return 'DELETE-Logout'
 
 
@@ -29,7 +29,7 @@ def authenticate():
 def updateCompany():
     if request.method == 'POST':
         return 'POST-Create a new company here'
-    else
+    else:
         return 'PUT-Update a company'
 
 @app.route('/company/<int:company_id>', methods=['GET'])
@@ -41,7 +41,7 @@ def getCompany():
 def addUserToCompany():
     if request.method == 'POST':
         return 'POST-Add user to a company'
-    else
+    else:
         return 'DELETE-Remove a user from a company'
 
 @app.route('/company/<int:company_id>/fullchain', methods=['GET'])
@@ -68,7 +68,7 @@ def verifyBlockchain():
 def updateUser():
     if request.method == 'POST':
         return 'POST-Create a new user here'
-	else
+	else:
         return 'PUT-Update a user'
 
 @app.route('/user/<int:user_id>', methods=['GET'])
