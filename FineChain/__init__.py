@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-
+    return "Homepage"
 
 @app.route('/isrunning')
 def isRunning():
