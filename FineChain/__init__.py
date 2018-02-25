@@ -3,6 +3,10 @@
 from flask import Flask
 app = Flask(__name__)
 
+@app.route('/isrunning')
+def isRunning():
+    return 'Yes, the flask app is running!'
+
 @app.route('/user', methods=['POST', 'PUT'])
 def hello_world():
 	return 'Hello World!'
