@@ -73,7 +73,7 @@ def updateUser():
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
-    returnVal = f'GET-Gets the user with id ' + str(user_id)
+    returnVal = 'GET-Gets the user with id ' + str(user_id)
     return returnVal
 
 
