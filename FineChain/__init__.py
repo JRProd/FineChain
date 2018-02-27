@@ -1,19 +1,23 @@
 #!/bin/usr/python
 
+import json
 from flask import Flask, request, Response
 
 
 class FineChainResponse(Response):
+    default_mimetype = 'application/json'
+
+class MessageResponse:
     message = 'Failure'
+    body = '{}'
 
-    def __init__(self, message=None, response=None, status=None, headers=None, content_type=None):
-        self.message = message
-        self.response = rresponse
-        self.status = status
-        self.headers = headers
-        self.content_type = content_type
-        self.default_mimetype = 'application/json'
+    def __init__(self, msg, bdy):
+        self.message = msg
+        self.body = bdy
 
+    def jsonify(self):
+        return json.dumps({"message":self.message,"body":self.body},
+                          separators=(',', ':'))
 
 app = Flask(__name__)
 app.make_response = FineChainResponse
@@ -109,7 +113,13 @@ def updateUser():
         cnx.commit()
         cursor.close()
 
-        app.make_response(True, response=body, status=202)
+        app.make_response(
+            MessageResponse(
+                message='Successfully created new USER',
+                body=body
+            ).jsonify(),
+            status=202
+        )
     else:
         return 'PUT-Update a user'
 
