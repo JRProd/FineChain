@@ -127,7 +127,7 @@ def updateUser():
             'id':id,
             'name':insertValues['name'],
             'email':insertValues['email'],
-            'company_id':NULL,
+            'company_id':None,
             'username':insertValues['username'],
         }
 
