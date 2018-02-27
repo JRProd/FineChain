@@ -4,6 +4,12 @@ from flask import Flask, request
 app = Flask(__name__)
 
 
+from mysql import connector
+cnx = connector.connect(user='flaskUser', password='MMv8nN9*gVZn.gn0Df5L',
+			host='127.0.0.1',
+			database='FineChain')
+
+
 ####################
 ## TEST Endpoints ##
 ####################
