@@ -85,8 +85,8 @@ def updateUser():
         body = request.get_json()
         values = {
             'name':body['name'],
-            'username':body['username']
-            'password':body['password']
+            'username':body['username'],
+            'password':body['password'],
             'salt':body['salt']
         }
 
