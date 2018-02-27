@@ -1,3 +1,5 @@
+from flask import jsonify
+
 class MessageResponse:
     message = 'Failure'
     body = '{}'
