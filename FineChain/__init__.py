@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 from mysql import connector
 cnx = connector.connect(user='flaskUser', password='MMv8nN9*gVZn.gn0Df5L',
-			host='127.0.0.1',
-			database='FineChain')
+            host='127.0.0.1',
+            database='FineChain')
 
 
 ####################
@@ -74,17 +74,47 @@ def verifyBlockchain(company_id):
 #####################
 ##  USER Endpoints ##
 #####################
+# Define sql commands commonly used
+insert_user = ("INSERT INTO users"
+               "(name, username, password, salt)"
+               "VALUES (%(name)s, %(username)s, %(password)s, %(salt)s")
 @app.route('/user', methods=['POST', 'PUT'])
 def updateUser():
+    cursor = cnx.cursor()
     if request.method == 'POST':
-        return 'POST-Create a new user here'
+        body = request.get_json()
+        values = {
+            'name':body['name'],
+            'username':body['username']
+            'password':body['password']
+            'salt':body['salt']
+        }
+
+        cursor.execute(insert_user, values)
+        cursor.commit()
+        cursor.close()
+
+        return Response(True, values);
     else:
         return 'PUT-Update a user'
+
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
     returnVal = 'GET-Gets the user with id ' + str(user_id)
     return returnVal
+
+
+class Response:
+    success = False
+    message = 'Failure'
+    body = '{}'
+
+    def __init__(s, b):
+        if s:
+            message = 'Success'
+        body = b;
+
 
 
 if __name__ == '__main__':
