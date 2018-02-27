@@ -3,20 +3,7 @@
 from flask import Flask, request, Response, jsonify
 app = Flask(__name__)
 
-class MessageResponse:
-    message = 'Failure'
-    body = '{}'
-
-    def __init__(self, message, body):
-        self.message = message
-        self.body = body
-
-    def toJson(self):
-        return jsonify(
-                    message=self.message,
-                    body=self.body
-                )
-
+from server import authUtils, basicUtils, sqlUtils
 
 ####################
 ## TEST Endpoints ##
@@ -86,6 +73,7 @@ def verifyBlockchain(company_id):
 
 @app.route('/user', methods=['POST', 'PUT'])
 def updateUser():
+    cursor = cnx.cursor()
     if request.method == 'POST':
 
         body = request.get_json()
@@ -97,11 +85,11 @@ def updateUser():
         password = authUtils.hash(body['password'], salt)
 
         id = sqlUtils.postUser(
-            name=body['name'],
-            email=email,
-            username=body['username'],
-            password=password,
-            salt=salt,
+            name=body['name']
+            email=email
+            username=body['username']
+            password=password
+            salt=salt
         )
 
         user = {
@@ -112,7 +100,7 @@ def updateUser():
             'username':body['username'],
         }
 
-        return MessageResponse(
+        return basicUtils.MessageResponse(
                     message='Successfully created new USER',
                     body=user
                 ).toJson()
