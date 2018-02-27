@@ -1,6 +1,19 @@
 #!/bin/usr/python
 
 from flask import Flask, request, Response
+
+
+class FineChainResponse(Response):
+    success = False
+    message = 'Failure'
+
+    def __init__(self, s):
+        if s:
+            self.message = 'Success'
+
+        self.default_mimetype = 'application/json'
+
+
 app = Flask(__name__)
 app.make_response = FineChainResponse
 
@@ -95,7 +108,7 @@ def updateUser():
         cnx.commit()
         cursor.close()
 
-        return Response(True, body)
+        app.make_response(True, response=body, status=202)
     else:
         return 'PUT-Update a user'
 
@@ -104,20 +117,6 @@ def updateUser():
 def getUser(user_id):
     returnVal = 'GET-Gets the user with id ' + str(user_id)
     return returnVal
-
-
-class FineChainResponse(Response):
-    success = False
-    message = 'Failure'
-    body = '{}'
-
-    def __init__(self, s, b):
-        if s:
-            self.message = 'Success'
-        self.body = b;
-
-        self.default_mimetype = 'application/json'
-
 
 
 if __name__ == '__main__':
