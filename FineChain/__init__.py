@@ -1,7 +1,8 @@
 #!/bin/usr/python
 
-from flask import Flask, request
+from flask import Flask, request, Response
 app = Flask(__name__)
+app.make_response = FineChainResponse
 
 
 from mysql import connector
@@ -75,9 +76,9 @@ def verifyBlockchain(company_id):
 ##  USER Endpoints ##
 #####################
 # Define sql commands commonly used
-insert_user = ("INSERT INTO users"
-               "(name, username, password, salt)"
-               "VALUES (%(name)s, %(username)s, %(password)s, %(salt)s")
+insert_user = ("INSERT INTO users "
+               "(name, username, password, salt) "
+               "VALUES (%(name)s, %(username)s, %(password)s, %(salt)s)")
 @app.route('/user', methods=['POST', 'PUT'])
 def updateUser():
     cursor = cnx.cursor()
@@ -91,10 +92,10 @@ def updateUser():
         }
 
         cursor.execute(insert_user, values)
-        cursor.commit()
+        cnx.commit()
         cursor.close()
 
-        return Response(True, values);
+        return Response(True, body)
     else:
         return 'PUT-Update a user'
 
@@ -105,15 +106,17 @@ def getUser(user_id):
     return returnVal
 
 
-class Response:
+class FineChainResponse(Response):
     success = False
     message = 'Failure'
     body = '{}'
 
-    def __init__(s, b):
+    def __init__(self, s, b):
         if s:
-            message = 'Success'
-        body = b;
+            self.message = 'Success'
+        self.body = b;
+
+        self.default_mimetype = 'application/json'
 
 
 
