@@ -11,9 +11,9 @@ class MessageResponse:
     message = 'Failure'
     body = '{}'
 
-    def __init__(self, msg, bdy):
-        self.message = msg
-        self.body = bdy
+    def __init__(self, message, body):
+        self.message = message
+        self.body = body
 
     def jsonify(self):
         return json.dumps({"message":self.message,"body":self.body},
@@ -116,7 +116,7 @@ def updateUser():
         app.make_response(
             MessageResponse(
                 message='Successfully created new USER',
-                body=body
+                body=values
             ).jsonify(),
             status=202
         )
