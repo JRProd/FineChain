@@ -73,7 +73,6 @@ def verifyBlockchain(company_id):
 
 @app.route('/user', methods=['POST', 'PUT'])
 def updateUser():
-    cursor = cnx.cursor()
     if request.method == 'POST':
 
         body = request.get_json()
@@ -85,11 +84,11 @@ def updateUser():
         password = authUtils.hash(body['password'], salt)
 
         id = sqlUtils.postUser(
-            name=body['name']
-            email=email
-            username=body['username']
-            password=password
-            salt=salt
+            name=body['name'],
+            email=email,
+            username=body['username'],
+            password=password,
+            salt=salt,
         )
 
         user = {
