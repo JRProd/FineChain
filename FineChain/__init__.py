@@ -4,13 +4,14 @@ from flask import Flask, request, Response
 
 
 class FineChainResponse(Response):
-    success = False
     message = 'Failure'
 
-    def __init__(self, s):
-        if s:
-            self.message = 'Success'
-
+    def __init__(self, message=None, response=None, status=None, headers=None, content_type=None):
+        self.message = message
+        self.response = rresponse
+        self.status = status
+        self.headers = headers
+        self.content_type = content_type
         self.default_mimetype = 'application/json'
 
 
