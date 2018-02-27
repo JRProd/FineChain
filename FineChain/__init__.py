@@ -1,12 +1,7 @@
 #!/bin/usr/python
 
-import json
 from flask import Flask, request, Response, jsonify
-
-
-
-#class FineChainResponse(Response):
-#    default_mimetype = 'application/json'
+app = Flask(__name__)
 
 class MessageResponse:
     message = 'Failure'
@@ -21,15 +16,6 @@ class MessageResponse:
                     message=self.message,
                     body=self.body
                 )
-
-app = Flask(__name__)
-#app.make_response = FineChainResponse
-
-
-from mysql import connector
-cnx = connector.connect(user='flaskUser', password='MMv8nN9*gVZn.gn0Df5L',
-            host='127.0.0.1',
-            database='FineChain')
 
 
 ####################
@@ -97,12 +83,7 @@ def verifyBlockchain(company_id):
 ##  USER Endpoints ##
 #####################
 # Define sql commands commonly used
-get_user_with_id = ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at"
-                    "FROM users"
-                    "WHERE users.id = %(id)s")
-insert_user = ("INSERT INTO users "
-               "(name, username, password, salt) "
-               "VALUES (%(name)s, %(username)s, %(password)s, %(salt)s)")
+
 @app.route('/user', methods=['POST', 'PUT'])
 def updateUser():
     cursor = cnx.cursor()
@@ -112,27 +93,25 @@ def updateUser():
         email = None
         if 'email' in body:
             email = body['email']
-        insertValues = {
-            'name':body['name'],
-            'email':email,
-            'username':body['username'],
-            'password':body['password'],
-            'salt':body['salt'],
-        }
 
-        cursor.execute(insert_user, insertValues)
-        id = cursor.lastrowid
+        salt = authUtils.generateSalt()
+        password = authUtils.hash(body['password'], salt)
+
+        id = sqlUtils.postUser(
+            name=body['name']
+            email=email
+            username=body['username']
+            password=password
+            salt=salt
+        )
 
         user = {
             'id':id,
-            'name':insertValues['name'],
-            'email':insertValues['email'],
+            'name':body['name'],
+            'email':email,
             'company_id':None,
-            'username':insertValues['username'],
+            'username':body['username'],
         }
-
-        cnx.commit()
-        cursor.close()
 
         return MessageResponse(
                     message='Successfully created new USER',
