@@ -1,11 +1,12 @@
 #!/bin/usr/python
 
 import json
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 
 
-class FineChainResponse(Response):
-    default_mimetype = 'application/json'
+
+#class FineChainResponse(Response):
+#    default_mimetype = 'application/json'
 
 class MessageResponse:
     message = 'Failure'
@@ -15,12 +16,14 @@ class MessageResponse:
         self.message = message
         self.body = body
 
-    def jsonify(self):
-        return json.dumps({"message":self.message,"body":self.body},
-                          separators=(',', ':'))
+    def toJson(self):
+        return jsonify(
+                    message=self.message,
+                    body=self.body
+                )
 
 app = Flask(__name__)
-app.make_response = FineChainResponse
+#app.make_response = FineChainResponse
 
 
 from mysql import connector
@@ -113,13 +116,16 @@ def updateUser():
         cnx.commit()
         cursor.close()
 
-        app.make_response(
-            MessageResponse(
-                message='Successfully created new USER',
-                body=values
-            ).jsonify(),
-            status=202
-        )
+#        app.make_response(
+#            MessageResponse(
+#                message='Successfully created new USER',
+#                body=values
+#            ).jsonify(),
+#            status=202
+#        )
+        return MessageResponse(
+                    message='Successfully created new USER',
+                    body=values).toJson()
     else:
         return 'PUT-Update a user'
 
