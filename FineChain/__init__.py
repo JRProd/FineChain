@@ -97,6 +97,9 @@ def verifyBlockchain(company_id):
 ##  USER Endpoints ##
 #####################
 # Define sql commands commonly used
+get_user_with_id = ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at"
+                    "FROM users"
+                    "WHERE users.id = %(id)s")
 insert_user = ("INSERT INTO users "
                "(name, username, password, salt) "
                "VALUES (%(name)s, %(username)s, %(password)s, %(salt)s)")
@@ -104,28 +107,37 @@ insert_user = ("INSERT INTO users "
 def updateUser():
     cursor = cnx.cursor()
     if request.method == 'POST':
+
         body = request.get_json()
-        values = {
+        insertValues = {
             'name':body['name'],
             'username':body['username'],
             'password':body['password'],
             'salt':body['salt']
         }
 
-        cursor.execute(insert_user, values)
+        cursor.execute(insert_user, insertValues)
+        id = cursor.lastwordid
+        cursor.execute(get_user_with_id, id)
+
+        user = {}
+        for (id, name, email, company_id, username, created_at, updated_at, deleted_at) in cursor:
+            user['id'] = id
+            user['name'] = name
+            user['email'] = email
+            user['company_id'] = company_id
+            user['username'] = username
+            user['created_at'] = created_at
+            user['updated_at'] = updated_at
+            user['deleted_at'] = deleted_at
+
         cnx.commit()
         cursor.close()
 
-#        app.make_response(
-#            MessageResponse(
-#                message='Successfully created new USER',
-#                body=values
-#            ).jsonify(),
-#            status=202
-#        )
         return MessageResponse(
                     message='Successfully created new USER',
-                    body=values).toJson()
+                    body=user
+                ).toJson()
     else:
         return 'PUT-Update a user'
 
