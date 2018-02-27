@@ -109,27 +109,27 @@ def updateUser():
     if request.method == 'POST':
 
         body = request.get_json()
+        email = None
+        if 'email' in body:
+            email = body['email']
         insertValues = {
             'name':body['name'],
+            'email':email,
             'username':body['username'],
             'password':body['password'],
-            'salt':body['salt']
+            'salt':body['salt'],
         }
 
         cursor.execute(insert_user, insertValues)
-        id = cursor.lastwordid
-        cursor.execute(get_user_with_id, id)
+        id = cursor.lastrowid
 
-        user = {}
-        for (id, name, email, company_id, username, created_at, updated_at, deleted_at) in cursor:
-            user['id'] = id
-            user['name'] = name
-            user['email'] = email
-            user['company_id'] = company_id
-            user['username'] = username
-            user['created_at'] = created_at
-            user['updated_at'] = updated_at
-            user['deleted_at'] = deleted_at
+        user = {
+            'id':id,
+            'name':insertValues['name'],
+            'email':insertValues['email'],
+            'company_id':NULL,
+            'username':insertValues['username'],
+        }
 
         cnx.commit()
         cursor.close()
