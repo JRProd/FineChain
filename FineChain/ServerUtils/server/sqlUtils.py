@@ -6,8 +6,7 @@ connection = connector.connect(
     database='FineChain'
 )
 
-get_user_with_id = ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at"
-                    "FROM users"
+get_user_with_id = ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at FROM users"
                     "WHERE id = %(id)s")
 insert_user =       ("INSERT INTO users "
                      "(name, email, username, password, salt) "
