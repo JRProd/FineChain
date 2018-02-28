@@ -74,7 +74,6 @@ def verifyBlockchain(company_id):
 @app.route('/user', methods=['POST', 'PUT'])
 def updateUser():
     if request.method == 'POST':
-
         body = request.get_json()
         email = None
         if 'email' in body:
@@ -109,7 +108,7 @@ def updateUser():
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
-    returnVal = 'GET-Gets the user with id ' + str(user_id)
+    
     return returnVal
 
 

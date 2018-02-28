@@ -41,3 +41,12 @@ def postUser(name, email, username, password, salt):
 
     # Return the new users ID
     return id
+
+def getUserWithId(id):
+    cursor = connection.cursor()
+
+    cursor.execute(get_user_with_id, {'id':id})
+    value = cursor.fetchone()
+
+    print(value)
+    print(type(value))
