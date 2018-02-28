@@ -1,6 +1,6 @@
 #!/bin/usr/python
 
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, Response
 app = Flask(__name__)
 
 from server import authUtils, basicUtils, sqlUtils
