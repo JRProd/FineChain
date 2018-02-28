@@ -108,8 +108,10 @@ def updateUser():
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
-    
-    return returnVal
+    return basicUtils.MessageResponse(
+            message='Successfully retrieved user',
+            body=sqlUtils.getUserWithId(user_id)
+    ).toJson()
 
 
 if __name__ == '__main__':

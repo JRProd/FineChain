@@ -48,5 +48,15 @@ def getUserWithId(id):
     cursor.execute(get_user_with_id, {'id':id})
     value = cursor.fetchone()
 
-    print(value)
-    print(type(value))
+    returnVal = {
+        'id':value[0],
+        'name':value[1],
+        'email':value[2],
+        'company_id':value[3],
+        'username':value[4],
+        'created_at':value[5],
+        'updated_at':value[6],
+        'deleted_at':value[7],
+    }
+
+    return returnVal
