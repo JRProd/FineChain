@@ -39,13 +39,15 @@ def getCompany(company_id):
 
     returnVal = {
         'id':company[0],
-        'name'company[1],
+        'name':company[1],
         'admin':admin,
         'user_ids':[],
         'created_at':company[4],
         'updated_at':company[5],
         'deleted_at':company[6]
     }
+
+    return returnVal
 
 # Adds a user to the users table
 #   name*     - Users name
