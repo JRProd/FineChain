@@ -82,21 +82,13 @@ def updateUser():
         salt = authUtils.generateSalt()
         password = authUtils.hash(body['password'], salt)
 
-        id = sqlUtils.postUser(
+        user = sqlUtils.postUser(
             name=body['name'],
             email=email,
             username=body['username'],
             password=password,
             salt=salt,
         )
-
-        user = {
-            'id':id,
-            'name':body['name'],
-            'email':email,
-            'company_id':None,
-            'username':body['username'],
-        }
 
         return basicUtils.MessageResponse(
                     message='Successfully created new USER',

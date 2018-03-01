@@ -6,20 +6,52 @@ connection = connector.connect(
     database='FineChain'
 )
 
-get_company_users = ("SELECT id "
-                     "FROM users "
-                     "WHERE company_id=%(id)s")
-
 get_company_with_id = ("SELECT * "
                        "FROM companys"
                        "WHERE id=%(id)s")
 
-get_user_with_id = ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
-                    "FROM users "
-                    "WHERE id=%(id)s")
-insert_user =       ("INSERT INTO users "
-                     "(name, email, username, password, salt) "
-                     "VALUES (%(name)s, %(email)s, %(username)s, %(password)s, %(salt)s)")
+get_company_users =   ("SELECT id "
+                       "FROM users "
+                       "WHERE company_id=%(id)s")
+
+insert_company =      ("INSERT INTO companys "
+                       "(name, admin_id) "
+                       "VALUES (%(name)s, %(admin_id)s)")
+
+get_user_with_id =    ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
+                       "FROM users "
+                       "WHERE id=%(id)s")
+
+insert_user =         ("INSERT INTO users "
+                       "(name, email, username, password, salt) "
+                       "VALUES (%(name)s, %(email)s, %(username)s, %(password)s, %(salt)s)")
+
+def postCompany(name, admin_id):
+    cursor = connection.cursor()
+
+    cursor.execute(insert_company, {'name':name, 'admin_id':admin_id})
+    id = cursor.lastrowid
+
+    #TODO: Add the company_id to the admin
+
+    admin = getUserWithId(admin_id)
+    # Remove unimportant values from the admin
+    admin.pop('company_id', None)
+    admin.pop('updated_at', None)
+    admin.pop('deleted_at', None)
+
+    returnVal = {
+        'id':id,
+        'name':name,
+        'admin':admin,
+        'user_ids':[],
+        'blockchain':{},
+    }
+
+    connection.commit()
+    cursor.close()
+
+    return returnVal
 
 def getCompany(company_id):
     cursor = connection.cursor()
@@ -28,6 +60,7 @@ def getCompany(company_id):
     company = cursor.fetchone()
 
     admin = getUserWithId(company[2])
+    # Remove unimportant values from the admin
     admin.pop('company_id', None)
     admin.pop('updated_at', None)
     admin.pop('deleted_at', None)
@@ -41,7 +74,7 @@ def getCompany(company_id):
         'id':company[0],
         'name':company[1],
         'admin':admin,
-        'user_ids':[],
+        'user_ids':user_ids,
         'created_at':company[4],
         'updated_at':company[5],
         'deleted_at':company[6]
@@ -71,12 +104,20 @@ def postUser(name, email, username, password, salt):
     cursor.execute(insert_user, queryValues)
     id = cursor.lastrowid
 
+    # Define value to return
+    returnVal = {
+        'id':id,
+        'name':name,
+        'email':email,
+        'company_id':None,
+        'username':username
+    }
+
     # Commit changes and close
     connection.commit()
     cursor.close()
-
     # Return the new users ID
-    return id
+    return returnVal
 
 # Gets a user with a id
 #   id*     - Id of user to retrieve
@@ -97,4 +138,5 @@ def getUserWithId(user_id):
         'deleted_at':value[7],
     }
 
+    cursor.close()
     return returnVal
