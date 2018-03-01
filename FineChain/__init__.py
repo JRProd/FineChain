@@ -3,7 +3,7 @@
 from flask import Flask, request, Response
 app = Flask(__name__)
 
-from server import authUtils, basicUtils, sqlUtils
+from ServerUtils import authUtils, basicUtils, sqlUtils
 
 ####################
 ## TEST Endpoints ##
