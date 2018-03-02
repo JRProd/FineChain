@@ -34,6 +34,7 @@ def authenticate():
 def updateCompany():
     if request.method == 'POST':
         body = request.get_json()
+        print(body)
         company = sqlUtils.postCompany(body['name'], body['admin_id'])
 
         return basicUtils.MessageResponse(
