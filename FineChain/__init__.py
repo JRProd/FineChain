@@ -52,7 +52,7 @@ def getCompany(company_id):
     return basicUtils.MessageResponse(
         message='Successfully got the COMPANY',
         body=sqlUtils.getCompany(company_id)
-    )
+    ).toJson()
     return returnVal
 
 @app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])

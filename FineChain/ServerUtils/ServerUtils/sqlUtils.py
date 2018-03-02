@@ -7,7 +7,7 @@ connection = connector.connect(
 )
 
 get_company_with_id = ("SELECT * "
-                       "FROM companys"
+                       "FROM companys "
                        "WHERE id=%(id)s")
 
 get_company_users =   ("SELECT id "
@@ -75,9 +75,9 @@ def getCompany(company_id):
         'name':company[1],
         'admin':admin,
         'user_ids':user_ids,
-        'created_at':company[4],
-        'updated_at':company[5],
-        'deleted_at':company[6]
+        'created_at':company[3],
+        'updated_at':company[4],
+        'deleted_at':company[5]
     }
 
     return returnVal
