@@ -41,15 +41,18 @@ def updateCompany():
         )
 
         return basicUtils.MessageResponse(
-                    message='Successfully created new COMPANY',
-                    body=company
-                ).toJson()
+            message='Successfully created new COMPANY',
+            body=company
+        ).toJson()
     else:
         return 'PUT-Update a company'
 
 @app.route('/company/<int:company_id>', methods=['GET'])
 def getCompany(company_id):
-    returnVal = 'GET-Gets the company with id ' + str(company_id)
+    return basicUtils.MessageResponse(
+        message='Successfully got the COMPANY',
+        body=sqlUtils.getCompany(company_id)
+    )
     return returnVal
 
 @app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
@@ -101,9 +104,9 @@ def updateUser():
         )
 
         return basicUtils.MessageResponse(
-                    message='Successfully created new USER',
-                    body=user
-                ).toJson()
+            message='Successfully created new USER',
+            body=user
+        ).toJson()
     else:
         return 'PUT-Update a user'
 
@@ -111,8 +114,8 @@ def updateUser():
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
     return basicUtils.MessageResponse(
-            message='Successfully retrieved user',
-            body=sqlUtils.getUserWithId(user_id)
+        message='Successfully retrieved the USER',
+        body=sqlUtils.getUserWithId(user_id)
     ).toJson()
 
 
