@@ -27,14 +27,16 @@ def authenticate():
         username = body['username']
         password = body['password']
 
-        if authUtils.authenticate(username, password):
-            session = authUtils.createSession()
+        auth, user_id = authUtils.authenticate(username, password)
+
+        if auth:
+            session = authUtils.createSession(user_id)
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
                 body=session
             ).toJson()
         else:
-            pass
+            return 'FALSE!?'
     else:
         return 'DELETE-Logout'
 
