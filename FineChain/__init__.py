@@ -37,7 +37,7 @@ def updateCompany():
 
         company = sqlUtils.postCompany(
             name=body['name'],
-            body=body['admin_id']
+            admin_id=body['admin_id']
         )
 
         return basicUtils.MessageResponse(
