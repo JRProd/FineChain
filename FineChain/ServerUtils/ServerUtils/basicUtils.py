@@ -10,6 +10,6 @@ class MessageResponse:
 
     def toJson(self):
         return jsonify(
-                    message=self.message,
-                    body=self.body
-                )
+            message=self.message,
+            body=self.body
+        )
