@@ -12,7 +12,7 @@ def authenticate(username, challenge):
 
     #TODO Authenticate should not return true. TESTING
     #return (True, user['id'])
-    return (compare(hass(challenge, salt), actual), user['id'])
+    return (compare(hash(challenge, salt), actual), user['id'])
 
 def compare(challenge, actual):
     return challenge == actual

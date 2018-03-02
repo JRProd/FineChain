@@ -2,9 +2,9 @@ from flask import jsonify
 
 class MessageResponse:
     message = 'Failure'
-    body = '{}'
+    body = None
 
-    def __init__(self, message, body):
+    def __init__(self, message, body=None):
         self.message = message
         self.body = body
 
@@ -15,5 +15,5 @@ class MessageResponse:
         )
 
 unauthroized_response = MessageResponse(
-    message='Unauthorized access',
-).toJson()
+    message='Unauthorized access'
+)
