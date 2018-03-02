@@ -7,8 +7,8 @@ def authenticate(username, challenge):
 
     #TODO Handle errors like no user found
 
-    salt = user[5]
-    actual = user[6]
+    salt = user[3]
+    actual = user[4]
 
     #TODO Authenticate should not return true. TESTING
     return True

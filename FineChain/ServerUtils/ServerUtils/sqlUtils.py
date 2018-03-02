@@ -29,7 +29,7 @@ get_user_with_id =    ("SELECT id, name, email, company_id, username, created_at
                        "FROM users "
                        "WHERE id=%(id)s")
 
-get_user_with_username =    ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
+get_user_with_username =    ("SELECT * "
                        "FROM users "
                        "WHERE username=%(username)s")
 
@@ -52,7 +52,7 @@ def openSession(user_id, session, resession, delete_at):
     id = cursor.lastrowid
 
     returnVal = {
-        'id':id,
+        'id':id
         'user_id':user_id,
         'session':session,
         'resession':resession,
@@ -185,9 +185,11 @@ def getUserWithUsername(username):
     returnVal = {
         'id':value[0],
         'username':value[4],
-        'created_at':value[5],
-        'updated_at':value[6],
-        'deleted_at':value[7],
+        'password':value[5],
+        'salt':value[6],
+        'created_at':value[7],
+        'updated_at':value[8],
+        'deleted_at':value[9],
     }
 
     cursor.close()
