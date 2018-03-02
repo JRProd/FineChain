@@ -52,7 +52,7 @@ def openSession(user_id, session, resession, delete_at):
     id = cursor.lastrowid
 
     returnVal = {
-        'id':id
+        'id':id,
         'user_id':user_id,
         'session':session,
         'resession':resession,

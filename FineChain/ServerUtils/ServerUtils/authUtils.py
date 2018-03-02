@@ -1,6 +1,6 @@
 import hashlib, random, sys
 from datetime import datetime, timedelta
-import sqlUtils
+from ServerUtils import sqlUtils
 
 def authenticate(username, challenge):
     user = sqlUtils.getUserWithUsername(username)

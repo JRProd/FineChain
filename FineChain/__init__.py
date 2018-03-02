@@ -34,6 +34,7 @@ def authenticate():
                 body=session
             ).toJson()
         else:
+            pass
     else:
         return 'DELETE-Logout'
 
