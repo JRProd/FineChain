@@ -33,7 +33,13 @@ def authenticate():
 @app.route('/company', methods=['POST', 'PUT'])
 def updateCompany():
     if request.method == 'POST':
-        return 'POST-Create a new company here'
+        body = request.get_json()
+        company = sqlUtils.postCompany(body['name'], body['admin_id'])
+
+        return basicUtils.MessageResponse(
+                    message='Successfully created new COMPANY',
+                    body=company
+                ).toJson()
     else:
         return 'PUT-Update a company'
 
