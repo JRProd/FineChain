@@ -6,8 +6,15 @@ connection = connector.connect(
     database='FineChain'
 )
 
+open_session =        ("INSERT INTO sessions "
+                       "(user_id, session, resession, deleted_at) "
+                       "VALUES (%(user_id)s, %(session)s, %(ressesion)s, %(delted_at)s")
+
+close_session =       ("DELETE FROM sessions "
+                       "WHERE session=%(session)s")
+
 get_company_with_id = ("SELECT * "
-                       "FROM companys "
+                       "FROM companys"
                        "WHERE id=%(id)s")
 
 get_company_users =   ("SELECT id "
@@ -22,9 +29,14 @@ get_user_with_id =    ("SELECT id, name, email, company_id, username, created_at
                        "FROM users "
                        "WHERE id=%(id)s")
 
+get_user_with_username =    ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
+                       "FROM users "
+                       "WHERE username=%(username)s")
+
 insert_user =         ("INSERT INTO users "
                        "(name, email, username, password, salt) "
                        "VALUES (%(name)s, %(email)s, %(username)s, %(password)s, %(salt)s)")
+
 
 def postCompany(name, admin_id):
     cursor = connection.cursor()
@@ -75,9 +87,9 @@ def getCompany(company_id):
         'name':company[1],
         'admin':admin,
         'user_ids':user_ids,
-        'created_at':company[3],
-        'updated_at':company[4],
-        'deleted_at':company[5]
+        'created_at':company[4],
+        'updated_at':company[5],
+        'deleted_at':company[6]
     }
 
     return returnVal
@@ -132,6 +144,23 @@ def getUserWithId(user_id):
         'name':value[1],
         'email':value[2],
         'company_id':value[3],
+        'username':value[4],
+        'created_at':value[5],
+        'updated_at':value[6],
+        'deleted_at':value[7],
+    }
+
+    cursor.close()
+    return returnVal
+
+def getUserWithUsername(username):
+    cursor = connection.cursor()
+
+    cursor.execute(get_user_with_username, {'username':username})
+    value = cursor.fetchone()
+
+    returnVal = {
+        'id':value[0],
         'username':value[4],
         'created_at':value[5],
         'updated_at':value[6],

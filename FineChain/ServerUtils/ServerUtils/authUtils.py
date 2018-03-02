@@ -1,4 +1,15 @@
 import hashlib, random, sys
+import sqlUtils
+
+def authenticate(username, challenge):
+    user = sqlUtils.getUserWithUsername(username)
+
+    #TODO Handle errors like no user found
+
+    salt = user[5]
+    actual = user[6]
+
+    return compare(hass(challenge, salt), actual)
 
 def compare(challenge, actual):
     return challenge == actual
