@@ -36,7 +36,9 @@ def authenticate():
                 body=session
             ).toJson()
         else:
-            return 'FALSE!?'
+            return basicUtils.MessageResponse(
+                message='Invalid username or password'
+            ).toJson(), 401
     else:
         return 'DELETE-Logout'
 
