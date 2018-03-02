@@ -22,7 +22,18 @@ def isRunning():
 @app.route('/auth', methods=['POST', 'DELETE'])
 def authenticate():
     if request.method == 'POST':
-        return 'POST-Login'
+        body = request.get_json()
+
+        username = body['username']
+        password = body['password']
+
+        if authUtils.authenticate(username, password):
+            session = authUtils.createSession()
+            return basicUtils.MessageResponse(
+                message="Successfully loged in",
+                body=session
+            ).toJson()
+        else:
     else:
         return 'DELETE-Logout'
 

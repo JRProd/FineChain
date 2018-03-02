@@ -8,7 +8,7 @@ connection = connector.connect(
 
 open_session =        ("INSERT INTO sessions "
                        "(user_id, session, resession, deleted_at) "
-                       "VALUES (%(user_id)s, %(session)s, %(ressesion)s, %(delted_at)s")
+                       "VALUES (%(user_id)s, %(session)s, %(ressesion)s, %(deleted_at)s")
 
 close_session =       ("DELETE FROM sessions "
                        "WHERE session=%(session)s")
@@ -37,6 +37,29 @@ insert_user =         ("INSERT INTO users "
                        "(name, email, username, password, salt) "
                        "VALUES (%(name)s, %(email)s, %(username)s, %(password)s, %(salt)s)")
 
+
+def openSession(user_id, session, resession, delete_at):
+    cursor = connection.cursor()
+
+    queryValues = {
+        'user_id':user_id,
+        'session':session,
+        'resession':resession,
+        'delete_at':delete_at
+    }
+
+    cursor.execute(open_session, queryValues)
+    id = cursor.lastrowid
+
+    returnVal = {
+        'id':id
+        'user_id':user_id,
+        'session':session,
+        'resession':resession,
+        'delete_at':delete_at
+    }
+
+    return returnVal
 
 def postCompany(name, admin_id):
     cursor = connection.cursor()
