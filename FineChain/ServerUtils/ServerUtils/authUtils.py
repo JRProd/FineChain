@@ -28,14 +28,15 @@ def hash(password, salt):
     return hashlib.sha512(saltedPassword).hexdigest()
 
 def getSession(headers):
-    authHeader = headers['Authorization'].split()
-    tokenType = authHeader[0]
-    token = authHeader[1]
+    authHeader = headers['Authorization']
+    print(authHeader, file=sys.stderr)
+    #tokenType = authHeader[0]
+    #token = authHeader[1]
 
-    if tokenType == 'Bearer':
-        return (True, sqlUtils.getSession(token))
-    else:
-        return (False, None)
+    #if tokenType == 'Bearer':
+        #return (True, sqlUtils.getSession(token))
+    #else:
+        #return (False, None)
 
 
 def createSession(user_id):
