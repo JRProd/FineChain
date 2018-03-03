@@ -155,7 +155,7 @@ def updateUser():
 
             updatePass = False
             if 'password' in body:
-                sqlUtils.updateUserPassword(user_id=user['user_id'], data={'password':body['password']})
+                sqlUtils.updateUserPassword(data={'id':user['user_id'], 'password':body['password']})
                 updatePass = True
 
             if updatePass:

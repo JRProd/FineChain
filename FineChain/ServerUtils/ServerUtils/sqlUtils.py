@@ -236,7 +236,7 @@ def updateUserInfo(user_id, data):
 
     return updatedUser
 
-def updateUserPassword(user_id, data):
+def updateUserPassword(data):
     cursor= connection.cursor()
 
     cursor.execute(update_user_password, data)
