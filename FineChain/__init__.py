@@ -138,10 +138,10 @@ def updateUser():
             body=user
         ).toJson(), 201
     else:
-        user_id = JWT.get_jwt_identity()
+        user = JWT.get_jwt_identity()
         body = request.get_json()
 
-        if user_id is not None:
+        if user is not None:
             # Get all the possible changes that were submitted in the body
             changes = ['name', 'email', 'password']
             updates = {}
@@ -151,7 +151,7 @@ def updateUser():
 
             print(updates, file=sys.stderr)
 
-            updated = sqlUtils.updateUser(user_id=user_id, data=updates)
+            updated = sqlUtils.updateUser(user_id=user['user_id'], data=updates)
 
             return basicUtils.MessageResponse(
                 message='Account Updated',
