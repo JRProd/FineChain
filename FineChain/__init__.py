@@ -1,7 +1,7 @@
 #!/bin/usr/python
 
 from flask import Flask, request, Response
-import flask_jwt_extended JWT
+import flask_jwt_extended as JWT
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
@@ -132,7 +132,7 @@ def updateUser():
         user_id = JWT.get_jwt_identity()
         body = request.get_json()
 
-        if user_id not None:
+        if user_id is not None:
             # Get all the possible changes that were submitted in the body
             changes = {'name','email','password'}
             updates = {}
@@ -148,7 +148,7 @@ def updateUser():
             ).toJson(), 200
 
         else:
-            return unauthroized_response.toJson(), 401
+            return basicUtils.unauthroized_response.toJson(), 401
 
 
 
