@@ -148,7 +148,7 @@ def updateUser():
             for change in changes:
                 if change in body:
                     infoUpdate[change] = body[change]
-            updated = sqlUtils.updateUserInfo(user_id=user['user_id'], data=updates)
+            updated = sqlUtils.updateUserInfo(user_id=user['user_id'], data=infoUpdate)
 
             updatePass = False
             if 'password' in body:
