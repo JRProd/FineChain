@@ -224,22 +224,19 @@ def postUser(name, email, username, password):
 
 def updateUserInfo(user_id, data):
     cursor= connection.cursor()
-    user = getUserWithId(user_id)
+    updatedUser = getUserWithId(user_id)
 
-    queryValues = {
-        'name':user['name'],
-        'email':user['email']
-    }
     for key, value in data.items():
-        user[key] = value
-        queryValues[key] = value
+        updatedUser[key] = value
 
-    cursor.execute(update_user_info, queryValues)
+
+
+    cursor.execute(update_user_info, updatedUser)
 
     # connection.commit()
     cursor.close()
 
-    return user
+    return updatedUser
 
 def updateUserPassword(user_id, data):
     cursor= connection.cursor()
