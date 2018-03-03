@@ -223,9 +223,9 @@ def updateUser(user_id, data):
 
     for key, value in data:
         queryValues = {
-            'key'=key,
-            'value'=value,
-            'id'=id
+            'key':key,
+            'value':value,
+            'id':id
         }
 
         cursor.execute(update_user, queryValues)
