@@ -14,35 +14,35 @@ open_session =        ("INSERT INTO sessions "
                        "(user_id, session, resession, deleted_at) "
                        "VALUES (%(user_id)s, %(session)s, %(resession)s, %(deleted_at)s)")
 
-close_session =       ("DELETE FROM sessions "
-                       "WHERE session=%(session)s")
+close_session =             ("DELETE FROM sessions "
+                             "WHERE session=%(session)s")
 
-get_company_with_id = ("SELECT * "
-                       "FROM companys"
-                       "WHERE id=%(id)s")
+get_company_with_id =       ("SELECT * "
+                             "FROM companys"
+                             "WHERE id=%(id)s")
 
-get_company_users =   ("SELECT id "
-                       "FROM users "
-                       "WHERE company_id=%(id)s")
+get_company_users =         ("SELECT id "
+                             "FROM users "
+                             "WHERE company_id=%(id)s")
 
-insert_company =      ("INSERT INTO companys "
-                       "(name, admin_id) "
-                       "VALUES (%(name)s, %(admin_id)s)")
+insert_company =            ("INSERT INTO companys "
+                            "(name, admin_id) "
+                            "VALUES (%(name)s, %(admin_id)s)")
 
-get_user_with_id =    ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
-                       "FROM users "
-                       "WHERE id=%(id)s")
+get_user_with_id =          ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
+                             "FROM users "
+                             "WHERE id=%(id)s")
 
 get_user_with_username =    ("SELECT * "
-                       "FROM users "
-                       "WHERE username=%(username)s")
+                             "FROM users "
+                             "WHERE username=%(username)s")
 
-insert_user =         ("INSERT INTO users "
-                       "(name, email, username, password) "
-                       "VALUES (%(name)s, %(email)s, %(username)s, %(password)s)")
+insert_user =               ("INSERT INTO users "
+                             "(name, email, username, password) "
+                             "VALUES (%(name)s, %(email)s, %(username)s, %(password)s)")
 
-update_user =         ("UPDATE users "
-                       "SET %(updates)s WHERE id=%(id)s")
+update_user =               ("UPDATE users "
+                             "SET %(updates)s WHERE id=%(id)s")
 
 def getSession(session):
     cursor - connection.cursor()
@@ -217,6 +217,7 @@ def postUser(name, email, username, password):
     # Return the new users ID
     return returnVal
 
+import sys
 def updateUser(user_id, data):
     cursor= connection.cursor()
 
@@ -227,7 +228,8 @@ def updateUser(user_id, data):
 
     # Remove the last ', ' of the update stirng
     updates = updates[:-2]
-    cursor.execute(update_user, {'updates':updates, 'id':user_id})
+    print(updates, file=sys.stderr)
+    cursor.execute(update_user, {'updates':str(updates), 'id':user_id})
 
     connection.commit()
     cursor.close()
