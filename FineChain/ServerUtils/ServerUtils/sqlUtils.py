@@ -229,11 +229,9 @@ def updateUserInfo(user_id, data):
     for key, value in data.items():
         updatedUser[key] = value
 
-
-
     cursor.execute(update_user_info, updatedUser)
 
-    # connection.commit()
+    connection.commit()
     cursor.close()
 
     return updatedUser
@@ -243,5 +241,5 @@ def updateUserPassword(user_id, data):
 
     cursor.execute(update_user_password, data)
 
-    # connection.commit()
+    connection.commit()
     cursor.close()

@@ -1,6 +1,5 @@
 import hashlib, sys
 from random import random
-from datetime import datetime, timedelta
 
 from ServerUtils import sqlUtils
 

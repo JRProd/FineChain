@@ -1,6 +1,7 @@
 #!/bin/usr/python
 
 import sys
+from datetime import datetime
 
 from flask import Flask, request, Response
 import flask_jwt_extended as JWT
@@ -148,7 +149,9 @@ def updateUser():
             for change in changes:
                 if change in body:
                     infoUpdate[change] = body[change]
+
             updated = sqlUtils.updateUserInfo(user_id=user['user_id'], data=infoUpdate)
+            updated['updated_at'] = datetime.now()
 
             updatePass = False
             if 'password' in body:
