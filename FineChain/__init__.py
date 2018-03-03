@@ -1,8 +1,12 @@
 #!/bin/usr/python
 
 from flask import Flask, request, Response
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
+
+jwt = JWTManager(app)
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
 
@@ -31,7 +35,9 @@ def authenticate():
         success, user_id = authUtils.authenticate(username, password)
 
         if success:
-            session = authUtils.createSession(user_id)
+            session = {
+                'session':create_access_token(identifier=user_id)
+            }
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
                 body=session
