@@ -38,7 +38,7 @@ def authenticate():
 
         if success:
             session = {
-                'session':JWT.create_access_token(identity=user_id)
+                'session':JWT.create_access_token(identity={'user_id':user_id})
             }
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
