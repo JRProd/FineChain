@@ -147,7 +147,10 @@ def updateUser():
             updates = {}
             for change in changes:
                 if change in body:
-                    updates[change] = body[change]
+                    if change is 'password':
+                        updates[change] = authUtils.hash(body[change])
+                    else:
+                        updates[change] = body[change]
 
             print(updates, file=sys.stderr)
 
