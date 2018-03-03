@@ -42,7 +42,7 @@ insert_user =               ("INSERT INTO users "
                              "VALUES (%(name)s, %(email)s, %(username)s, %(password)s)")
 
 update_user =               ("UPDATE users "
-                             "SET %(key)s=`%(value)s` "
+                             "SET %(key)s=%(value)s "
                              "WHERE id=%(id)s")
 
 def getSession(session):
