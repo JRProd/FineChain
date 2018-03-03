@@ -133,7 +133,7 @@ def updateUser():
     else:
         user_id = JWT.get_jwt_identity()
         print(user_id, file=sys.stderr)
-
+        print(request.headers, file=sys.stderr)
         body = request.get_json()
 
         if user_id is not None:
