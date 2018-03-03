@@ -41,8 +41,12 @@ insert_user =               ("INSERT INTO users "
                              "(name, email, username, password) "
                              "VALUES (%(name)s, %(email)s, %(username)s, %(password)s)")
 
-update_user =               ("UPDATE users "
-                             "SET name=%(name)s, email=%(email)s, passowrd=%(pass)s "
+update_user_info =          ("UPDATE users "
+                             "SET name=%(name)s, email=%(email)s "
+                             "WHERE id=%(id)s")
+
+update_user_password =      ("UPDATE users "
+                             "SET password=%(password)s "
                              "WHERE id=%(id)s")
 
 def getSession(session):
@@ -218,21 +222,29 @@ def postUser(name, email, username, password):
     # Return the new users ID
     return returnVal
 
-def updateUser(user_id, data):
+def updateUserInfo(user_id, data):
     cursor= connection.cursor()
     user = getUserWithId(user_id)
 
     queryValues = {
         'name':user['name'],
-        'email':user['email'],
-        'password':user['password']
+        'email':user['email']
     }
     for key, value in data.items():
+        user[key] = value
         queryValues[key] = value
 
-    cursor.execute(update_user, queryValues)
+    cursor.execute(update_user_info, queryValues)
 
     # connection.commit()
     cursor.close()
 
-    return data
+    return user
+
+def updateUserPassword(user_id, data):
+    cursor= connection.cursor()
+
+    cursor.execute(update_user_password, data)
+
+    # connection.commit()
+    cursor.close()

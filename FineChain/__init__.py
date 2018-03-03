@@ -143,18 +143,20 @@ def updateUser():
 
         if user is not None:
             # Get all the possible changes that were submitted in the body
-            changes = ['name', 'email', 'password']
-            updates = {}
+            changes = ['name', 'email']
+            infoUpdate = {}
             for change in changes:
                 if change in body:
-                    if change is 'password':
-                        updates[change] = authUtils.hash(body[change])
-                    else:
-                        updates[change] = body[change]
+                    infoUpdate[change] = body[change]
+            updated = sqlUtils.updateUserInfo(user_id=user['user_id'], data=updates)
 
-            print(updates, file=sys.stderr)
+            updatePass = False
+            if 'password' in body:
+                sqlUtils.updateUserPassword(user_id=user['user_id'], data={'password':body['password']})
+                updatePass = True
 
-            updated = sqlUtils.updateUser(user_id=user['user_id'], data=updates)
+            if updatePass:
+                updated['password']='Password Updated'
 
             return basicUtils.MessageResponse(
                 message='Account Updated',
