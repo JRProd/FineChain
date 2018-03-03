@@ -218,11 +218,11 @@ def postUser(name, email, username, password):
     # Return the new users ID
     return returnVal
 
-import sys
 def updateUser(user_id, data):
     cursor= connection.cursor()
 
     for key, value in data.items():
+
         queryValues = {
             'key':key,
             'value':value,

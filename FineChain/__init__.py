@@ -27,6 +27,7 @@ def isRunning():
 ## AUTH Endpoints ##
 ####################
 @app.route('/auth', methods=['POST', 'DELETE'])
+@JWT.jwt_optional
 def authenticate():
     if request.method == 'POST':
         body = request.get_json()
@@ -56,6 +57,7 @@ def authenticate():
 ## COMPANY Endpoints ##
 #######################
 @app.route('/company', methods=['POST', 'PUT'])
+@JWT.jwt_optional
 def updateCompany():
     if request.method == 'POST':
         body = request.get_json()
@@ -80,6 +82,7 @@ def getCompany(company_id):
     ).toJson(), 200
 
 @app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
+@JWT.jwt_required
 def addUserToCompany(company_id):
     if request.method == 'POST':
         return 'POST-Add user to a company'
@@ -87,18 +90,22 @@ def addUserToCompany(company_id):
         return 'DELETE-Remove a user from a company'
 
 @app.route('/company/<int:company_id>/fullchain', methods=['GET'])
+@JWT.jwt_required
 def getFullchain(company_id):
     return 'GET-Gets the fullchain'
 
 @app.route('/company/<int:company_id>/post', methods=['POST'])
+@JWT.jwt_required
 def postTransaction(company_id):
     return 'POST-Add a transaction to a company'
 
 @app.route('/company/<int:company_id>/update', methods=['GET'])
+@JWT.jwt_required
 def getUpdatedBlockchain(company_id):
     return 'GET-Gets the updates from the blockchain'
 
 @app.route('/company/<int:company_id>/verify', methods=['GET'])
+@JWT.jwt_required
 def verifyBlockchain(company_id):
     return 'GET-Verify blockchain for company'
 
@@ -136,7 +143,7 @@ def updateUser():
 
         if user_id is not None:
             # Get all the possible changes that were submitted in the body
-            changes = {'name','email','password'}
+            changes = ['name', 'email', 'password']
             updates = {}
             for change in changes:
                 if change in body:
