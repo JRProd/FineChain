@@ -1,12 +1,12 @@
 #!/bin/usr/python
 
 from flask import Flask, request, Response
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+import flask_jwt_extended JWT
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
 
-jwt = JWTManager(app)
+jwt = JWT.JWTManager(app)
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
 
@@ -36,7 +36,7 @@ def authenticate():
 
         if success:
             session = {
-                'session':create_access_token(identifier=user_id)
+                'session':JWT.create_access_token(identifier=user_id)
             }
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
@@ -107,6 +107,7 @@ def verifyBlockchain(company_id):
 # Define sql commands commonly used
 
 @app.route('/user', methods=['POST', 'PUT'])
+@JWT.jwt_optional
 def updateUser():
     if request.method == 'POST':
         body = request.get_json()
@@ -128,10 +129,10 @@ def updateUser():
             body=user
         ).toJson(), 201
     else:
-        open, session = authUtils.getSession(request.headers)
+        user_id = JWT.get_jwt_identity()
         body = request.get_json()
 
-        if open:
+        if user_id not None:
             # Get all the possible changes that were submitted in the body
             changes = {'name','email','password'}
             updates = {}
@@ -139,7 +140,7 @@ def updateUser():
                 if change in body:
                     updates[change] = body[change]
 
-            updated = sqlUtils.updateUser(user_id=session['user_id'], data=updates)
+            updated = sqlUtils.updateUser(user_id=user_id, data=updates)
 
             return basicUtils.MessageResponse(
                 message='Account Updated',
