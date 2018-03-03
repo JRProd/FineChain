@@ -12,7 +12,7 @@ get_session =         ("SELECT * "
 
 open_session =        ("INSERT INTO sessions "
                        "(user_id, session, resession, deleted_at) "
-                       "VALUES (%(user_id)s, %(session)s, %(ressesion)s, %(deleted_at)s")
+                       "VALUES (%(user_id)s, %(session)s, %(resession)s, %(deleted_at)s)")
 
 close_session =       ("DELETE FROM sessions "
                        "WHERE session=%(session)s")
@@ -61,25 +61,25 @@ def getSession(session):
 
     return returnVal
 
-def openSession(user_id, session, resession, delete_at):
+def openSession(user_id, session, resession, deleted_at):
     cursor = connection.cursor()
 
     queryValues = {
         'user_id':user_id,
         'session':session,
         'resession':resession,
-        'delete_at':delete_at
+        'deleted_at':deleted_at
     }
 
     cursor.execute(open_session, queryValues)
     id = cursor.lastrowid
 
     returnVal = {
-        'id':id
+        'id':id,
         'user_id':user_id,
         'session':session,
         'resession':resession,
-        'delete_at':delete_at
+        'deleted_at':deleted_at
     }
 
     connection.commit()
@@ -226,9 +226,9 @@ def updateUser(user_id, data):
 
     for key, value in data:
         queryValues = {
-            'key'=key,
-            'value'=value,
-            'id'=id
+            'key':key,
+            'value':value,
+            'id':id
         }
 
         cursor.execute(update_user, queryValues)
