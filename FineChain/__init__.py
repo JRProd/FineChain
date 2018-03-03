@@ -27,14 +27,14 @@ def authenticate():
         username = body['username']
         password = body['password']
 
-        auth, user_id = authUtils.authenticate(username, password)
+        success, user_id = authUtils.authenticate(username, password)
 
-        if auth:
+        if success:
             session = authUtils.createSession(user_id)
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
                 body=session
-            ).toJson()
+            ).toJson(), 200
         else:
             return basicUtils.MessageResponse(
                 message='Invalid username or password'
@@ -59,7 +59,7 @@ def updateCompany():
         return basicUtils.MessageResponse(
             message='Successfully created new COMPANY',
             body=company
-        ).toJson()
+        ).toJson(), 201
     else:
         return 'PUT-Update a company'
 
@@ -68,8 +68,7 @@ def getCompany(company_id):
     return basicUtils.MessageResponse(
         message='Successfully got the COMPANY',
         body=sqlUtils.getCompany(company_id)
-    ).toJson()
-    return returnVal
+    ).toJson(), 200
 
 @app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
 def addUserToCompany(company_id):
@@ -122,9 +121,29 @@ def updateUser():
         return basicUtils.MessageResponse(
             message='Successfully created new USER',
             body=user
-        ).toJson()
+        ).toJson(), 201
     else:
-        return 'PUT-Update a user'
+        open, session = authUtils.getSession(request.headers)
+        body = request.get_json()
+
+        if open:
+            # Get all the possible changes that were submitted in the body
+            changes = {'name','email','password'}
+            updates = {}
+            for change in changes:
+                if change in body:
+                    updates[change] = body[change]
+
+            updated = sqlUtils.updateUser(user_id=session['user_id'], data=updates)
+
+            return basicUtils.MessageResponse(
+                message='Account Updated',
+                body=updated
+            ).toJson(), 200
+
+        else:
+            return unauthroized_response.toJson(), 401
+
 
 
 @app.route('/user/<int:user_id>', methods=['GET'])
@@ -132,7 +151,7 @@ def getUser(user_id):
     return basicUtils.MessageResponse(
         message='Successfully retrieved the USER',
         body=sqlUtils.getUserWithId(user_id)
-    ).toJson()
+    ).toJson(), 200
 
 
 if __name__ == '__main__':

@@ -27,6 +27,17 @@ def hash(password, salt):
     saltedPassword = str(password + str(salt)).encode('utf-8')
     return hashlib.sha512(saltedPassword).hexdigest()
 
+def getSession(headers):
+    authHeader = headers['Authorization'].split()
+    tokenType = authHeader[0]
+    token = authHeader[1]
+
+    if tokenType == 'Bearer':
+        return (True, sqlUtils.getSession(token))
+    else:
+        return (False, None)
+
+
 def createSession(user_id):
     session = generateToken(str(user_id) + str(datetime.time))
     resession = generateToken(datetime.time)

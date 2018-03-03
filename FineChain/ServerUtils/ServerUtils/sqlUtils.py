@@ -6,9 +6,13 @@ connection = connector.connect(
     database='FineChain'
 )
 
+get_session =         ("SELECT * "
+                       "FROM sessions "
+                       "WHERE session=%(session)s")
+
 open_session =        ("INSERT INTO sessions "
                        "(user_id, session, resession, deleted_at) "
-                       "VALUES (%(user_id)s, %(session)s, %(resession)s, %(deleted_at)s)")
+                       "VALUES (%(user_id)s, %(session)s, %(ressesion)s, %(deleted_at)s")
 
 close_session =       ("DELETE FROM sessions "
                        "WHERE session=%(session)s")
@@ -37,27 +41,49 @@ insert_user =         ("INSERT INTO users "
                        "(name, email, username, password, salt) "
                        "VALUES (%(name)s, %(email)s, %(username)s, %(password)s, %(salt)s)")
 
+update_user =         ("UPDATE users "
+                       "SET %(key)s=%(value)s "
+                       "WHERE id=%(id)s")
 
-def openSession(user_id, session, resession, deleted_at):
+def getSession(session):
+    cursor - connection.cursor()
+
+    session = cursor.execute(get_session, {'session':session})
+
+    returnVal = {
+        'id':session[0],
+        'user_id':session[1],
+        'session':session[2],
+        'resession':session[3],
+        'created_at':session[4],
+        'deleted_at':session[5],
+    }
+
+    return returnVal
+
+def openSession(user_id, session, resession, delete_at):
     cursor = connection.cursor()
 
     queryValues = {
         'user_id':user_id,
         'session':session,
         'resession':resession,
-        'deleted_at':deleted_at
+        'delete_at':delete_at
     }
 
     cursor.execute(open_session, queryValues)
     id = cursor.lastrowid
 
     returnVal = {
-        'id':id,
+        'id':id
         'user_id':user_id,
         'session':session,
         'resession':resession,
-        'deleted_at':deleted_at
+        'delete_at':delete_at
     }
+
+    connection.commit()
+    cursor.close()
 
     return returnVal
 
@@ -117,6 +143,47 @@ def getCompany(company_id):
 
     return returnVal
 
+# Gets a user with a id
+#   id*     - Id of user to retrieve
+def getUserWithId(user_id):
+    cursor = connection.cursor()
+
+    cursor.execute(get_user_with_id, {'id':user_id})
+    user = cursor.fetchone()
+
+    returnVal = {
+        'id':user[0],
+        'name':user[1],
+        'email':user[2],
+        'company_id':user[3],
+        'username':user[4],
+        'created_at':user[5],
+        'updated_at':user[6],
+        'deleted_at':user[7],
+    }
+
+    cursor.close()
+    return returnVal
+
+def getUserWithUsername(username):
+    cursor = connection.cursor()
+
+    cursor.execute(get_user_with_username, {'username':username})
+    user = cursor.fetchone()
+
+    returnVal = {
+        'id':user[0],
+        'username':user[4],
+        'password':user[5],
+        'salt':user[6],
+        'created_at':user[7],
+        'updated_at':user[8],
+        'deleted_at':user[9],
+    }
+
+    cursor.close()
+    return returnVal
+
 # Adds a user to the users table
 #   name*     - Users name
 #   email     - Users email
@@ -154,43 +221,19 @@ def postUser(name, email, username, password, salt):
     # Return the new users ID
     return returnVal
 
-# Gets a user with a id
-#   id*     - Id of user to retrieve
-def getUserWithId(user_id):
-    cursor = connection.cursor()
+def updateUser(user_id, data):
+    cursor= connection.cursor()
 
-    cursor.execute(get_user_with_id, {'id':user_id})
-    value = cursor.fetchone()
+    for key, value in data:
+        queryValues = {
+            'key'=key,
+            'value'=value,
+            'id'=id
+        }
 
-    returnVal = {
-        'id':value[0],
-        'name':value[1],
-        'email':value[2],
-        'company_id':value[3],
-        'username':value[4],
-        'created_at':value[5],
-        'updated_at':value[6],
-        'deleted_at':value[7],
-    }
+        cursor.execute(update_user, queryValues)
 
+    connection.commit()
     cursor.close()
-    return returnVal
 
-def getUserWithUsername(username):
-    cursor = connection.cursor()
-
-    cursor.execute(get_user_with_username, {'username':username})
-    value = cursor.fetchone()
-
-    returnVal = {
-        'id':value[0],
-        'username':value[4],
-        'password':value[5],
-        'salt':value[6],
-        'created_at':value[7],
-        'updated_at':value[8],
-        'deleted_at':value[9],
-    }
-
-    cursor.close()
-    return returnVal
+    return data
