@@ -36,7 +36,7 @@ def authenticate():
 
         if success:
             session = {
-                'session':create_access_token(identifier=user_id)
+                'session':create_access_token(identity=user_id)
             }
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
