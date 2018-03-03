@@ -132,9 +132,6 @@ def updateUser():
         ).toJson(), 201
     else:
         user_id = JWT.get_jwt_identity()
-        print(user_id, file=sys.stderr)
-        print(request.headers, file=sys.stderr)
-        print(request.headers.get('Authorization'), file=sys.stderr)
         body = request.get_json()
 
         if user_id is not None:
@@ -144,6 +141,8 @@ def updateUser():
             for change in changes:
                 if change in body:
                     updates[change] = body[change]
+
+            print(updates, file=sys.stderr)
 
             updated = sqlUtils.updateUser(user_id=user_id, data=updates)
 
