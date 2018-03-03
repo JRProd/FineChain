@@ -1,5 +1,7 @@
 #!/bin/usr/python
 
+import sys
+
 from flask import Flask, request, Response
 import flask_jwt_extended as JWT
 
@@ -130,6 +132,8 @@ def updateUser():
         ).toJson(), 201
     else:
         user_id = JWT.get_jwt_identity()
+        print(user_id, file=sys.stderr)
+
         body = request.get_json()
 
         if user_id is not None:
