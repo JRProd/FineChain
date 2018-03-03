@@ -42,7 +42,8 @@ insert_user =               ("INSERT INTO users "
                              "VALUES (%(name)s, %(email)s, %(username)s, %(password)s)")
 
 update_user =               ("UPDATE users "
-                             "SET %(updates)s WHERE id=%(id)s")
+                             "SET %(key)s=`%(value)s` "
+                             "WHERE id=%(id)s")
 
 def getSession(session):
     cursor - connection.cursor()
@@ -221,15 +222,14 @@ import sys
 def updateUser(user_id, data):
     cursor= connection.cursor()
 
-    updates = ""
     for key, value in data.items():
-        updates += key + ' = ' + value
-        updates += ', '
-
-    # Remove the last ', ' of the update stirng
-    updates = updates[:-2]
-    print(updates, file=sys.stderr)
-    cursor.execute(update_user, {'updates':str(updates), 'id':user_id})
+        queryValues ={
+            'key':key,
+            'value':value,
+            'id':user_id
+        }
+        print(queryValues, file=sys.stderr)
+        cursor.execute(update_user, {'updates':str(updates), 'id':user_id})
 
     connection.commit()
     cursor.close()
