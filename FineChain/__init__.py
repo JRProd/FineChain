@@ -2,7 +2,7 @@
 
 from flask import Flask, request, Response
 app = Flask(__name__)
-app.config['SECRET_KEY'] =
+app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
 
