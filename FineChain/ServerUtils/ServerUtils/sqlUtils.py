@@ -12,7 +12,7 @@ get_session =         ("SELECT * "
 
 open_session =        ("INSERT INTO sessions "
                        "(user_id, session, resession, deleted_at) "
-                       "VALUES (%(user_id)s, %(session)s, %(resession)s, %(deleted_at)s)")
+                       "VALUES (%(user_id)s, %(session)s, %(ressesion)s, %(deleted_at)s")
 
 close_session =       ("DELETE FROM sessions "
                        "WHERE session=%(session)s")
@@ -38,8 +38,8 @@ get_user_with_username =    ("SELECT * "
                        "WHERE username=%(username)s")
 
 insert_user =         ("INSERT INTO users "
-                       "(name, email, username, password, salt) "
-                       "VALUES (%(name)s, %(email)s, %(username)s, %(password)s, %(salt)s)")
+                       "(name, email, username, password) "
+                       "VALUES (%(name)s, %(email)s, %(username)s, %(password)s)")
 
 update_user =         ("UPDATE users "
                        "SET %(key)s=%(value)s "
@@ -61,25 +61,25 @@ def getSession(session):
 
     return returnVal
 
-def openSession(user_id, session, resession, deleted_at):
+def openSession(user_id, session, resession, delete_at):
     cursor = connection.cursor()
 
     queryValues = {
         'user_id':user_id,
         'session':session,
         'resession':resession,
-        'deleted_at':deleted_at
+        'delete_at':delete_at
     }
 
     cursor.execute(open_session, queryValues)
     id = cursor.lastrowid
 
     returnVal = {
-        'id':id,
+        'id':id
         'user_id':user_id,
         'session':session,
         'resession':resession,
-        'deleted_at':deleted_at
+        'delete_at':delete_at
     }
 
     connection.commit()
@@ -175,10 +175,9 @@ def getUserWithUsername(username):
         'id':user[0],
         'username':user[4],
         'password':user[5],
-        'salt':user[6],
-        'created_at':user[7],
-        'updated_at':user[8],
-        'deleted_at':user[9],
+        'created_at':user[6],
+        'updated_at':user[7],
+        'deleted_at':user[8],
     }
 
     cursor.close()
@@ -189,8 +188,7 @@ def getUserWithUsername(username):
 #   email     - Users email
 #   username* - Users login identifier
 #   password* - Hashed password
-#   salt*     - The salt to imporve security
-def postUser(name, email, username, password, salt):
+def postUser(name, email, username, password):
     # Prepare for sql query
     cursor = connection.cursor()
 
@@ -198,8 +196,7 @@ def postUser(name, email, username, password, salt):
         'name':name,
         'email':email,
         'username':username,
-        'password':password,
-        'salt':salt
+        'password':password
     }
 
     # Execute the SQL command
@@ -226,9 +223,9 @@ def updateUser(user_id, data):
 
     for key, value in data:
         queryValues = {
-            'key':key,
-            'value':value,
-            'id':id
+            'key'=key,
+            'value'=value,
+            'id'=id
         }
 
         cursor.execute(update_user, queryValues)

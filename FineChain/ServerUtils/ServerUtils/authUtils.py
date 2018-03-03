@@ -1,31 +1,29 @@
-import hashlib, random, sys
+import hashlib, sys
+from random import random
 from datetime import datetime, timedelta
+
 from ServerUtils import sqlUtils
+
+from passlib.hash import pbkdf2_sha512 as sha512
 
 def authenticate(username, challenge):
     user = sqlUtils.getUserWithUsername(username)
 
     #TODO Handle errors like no user found
-
-    salt = user['salt']
     actual = user['password']
 
     #TODO Authenticate should not return true. TESTING
     #return (True, user['id'])
-    return (compare(hash(challenge, salt), actual), user['id'])
+    return (compare(challenge, actual), user['id'])
 
 def compare(challenge, actual):
-    return challenge == actual
+    return sha512.verify(challenge, actual)
 
 def generateToken(seed):
     return hashlib.md5(str(seed).encode('utf-8')).hexdigest()
 
-def generateSalt():
-    return random.randint(0, 2147483647)
-
-def hash(password, salt):
-    saltedPassword = str(password + str(salt)).encode('utf-8')
-    return hashlib.sha512(saltedPassword).hexdigest()
+def hash(password):
+    return sha512.hash(password)
 
 def getSession(headers):
     authHeader = headers['Authorization']

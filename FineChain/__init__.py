@@ -2,6 +2,7 @@
 
 from flask import Flask, request, Response
 app = Flask(__name__)
+app.config['SECRET_KEY'] =
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
 
@@ -107,15 +108,13 @@ def updateUser():
         if 'email' in body:
             email = body['email']
 
-        salt = authUtils.generateSalt()
-        password = authUtils.hash(body['password'], salt)
+        password = authUtils.hash(body['password'])
 
         user = sqlUtils.postUser(
             name=body['name'],
             email=email,
             username=body['username'],
-            password=password,
-            salt=salt,
+            password=password
         )
 
         return basicUtils.MessageResponse(
