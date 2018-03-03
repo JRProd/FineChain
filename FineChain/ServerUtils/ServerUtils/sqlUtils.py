@@ -218,7 +218,6 @@ def postUser(name, email, username, password):
     # Return the new users ID
     return returnVal
 
-import sys
 def updateUser(user_id, data):
     cursor= connection.cursor()
 
@@ -228,8 +227,7 @@ def updateUser(user_id, data):
             'value':value,
             'id':user_id
         }
-        print(queryValues, file=sys.stderr)
-        cursor.execute(update_user, {'updates':str(updates), 'id':user_id})
+        cursor.execute(update_user, queryValues)
 
     connection.commit()
     cursor.close()
