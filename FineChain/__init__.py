@@ -110,10 +110,16 @@ def updateCompany():
 
 @app.route('/company/<int:company_id>', methods=['GET'])
 def getCompany(company_id):
-    return basicUtils.MessageResponse(
-        message='Successfully got the COMPANY',
-        body=sqlUtils.getCompanyWithId(company_id)
-    ).toJson(), 200
+    try:
+        return basicUtils.MessageResponse(
+            message='Successfully got the COMPANY',
+            body=sqlUtils.getCompanyWithId(company_id)
+        ).toJson(), 200
+    except ValueError:
+        return basicUtils.notFoundResponse(
+            object='Company',
+            value=company_id
+        ).toJson(), 404
 
 @app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
 @JWT.jwt_required
@@ -207,10 +213,16 @@ def updateUser():
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
-    return basicUtils.MessageResponse(
-        message='Successfully retrieved the USER',
-        body=sqlUtils.getUserWithId(user_id)
-    ).toJson(), 200
+    try:
+        return basicUtils.MessageResponse(
+            message='Successfully retrieved the USER',
+            body=sqlUtils.getUserWithId(user_id)
+        ).toJson(), 200
+    except ValueError:
+        return basicUtils.notFoundResponse(
+            object='User',
+            value=user_id
+        ).toJson(), 404
 
 
 if __name__ == '__main__':

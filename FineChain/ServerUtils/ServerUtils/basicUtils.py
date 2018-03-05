@@ -17,3 +17,11 @@ class MessageResponse:
 unauthroized_response = MessageResponse(
     message='Unauthorized access'
 )
+
+def notFoundResponse(object=None, value=None):
+    if object is None:
+        object = 'Object'
+     return MessageResponse(
+        message='%s is not found' % object,
+        body=value
+     )

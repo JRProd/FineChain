@@ -52,6 +52,9 @@ def getCompanyWithId(company_id):
     cursor.execute(get_company_with_id, {'id':company_id})
     company = cursor.fetchone()
 
+    if company is None:
+        raise ValueError("No company found with id: %s" % company_id)
+
     admin = getUserWithId(company[2])
     # Remove unimportant values from the admin
     admin.pop('company_id', None)
@@ -142,6 +145,9 @@ def getUserWithId(user_id):
     cursor.execute(get_user_with_id, {'id':user_id})
     user = cursor.fetchone()
 
+    if user is None:
+        raise ValueError("No user found with id: %s" % user_id)
+
     returnVal = {
         'id':user[0],
         'name':user[1],
@@ -161,6 +167,9 @@ def getUserWithUsername(username):
 
     cursor.execute(get_user_with_username, {'username':username})
     user = cursor.fetchone()
+
+    if user is None:
+        raise ValueError("No user found with username: %s" % username)
 
     returnVal = {
         'id':user[0],
