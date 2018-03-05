@@ -63,7 +63,7 @@ def getCompanyWithId(company_id):
     admin.pop('deleted_at', None)
 
     cursor.execute(get_company_users, {'id':company_id})
-    user_ids = []
+    user_ids = [None]
     for (id,) in cursor:
         user_ids.append(id)
 
@@ -118,7 +118,7 @@ def updateCompanyInfo(company_id, data):
     connection.commit()
     cursor.close()
 
-    return updatedUser
+    return updatedCompany
 
 def updateComapnyAdmin(company_id, user_id, username):
     cursor= connection.cursor()
