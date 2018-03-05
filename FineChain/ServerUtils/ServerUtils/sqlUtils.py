@@ -19,7 +19,7 @@ insert_company =            ("INSERT INTO companys "
                             "VALUES (%(name)s, %(admin_id)s)")
 
 update_company_info =       ("UPDATE companys "
-                             "SET name=%(name)s, user_ids=%(user_ids)s "
+                             "SET name=%(name)s "
                              "WHERE id=%(id)s")
 
 update_company_admin =      ("UPDATE companys "
@@ -45,13 +45,12 @@ update_user_info =          ("UPDATE users "
 update_user_password =      ("UPDATE users "
                              "SET password=%(password)s "
                              "WHERE id=%(id)s")
-import sys
+
 def getCompanyWithId(company_id):
     cursor = connection.cursor()
 
     cursor.execute(get_company_with_id, {'id':company_id})
     company = cursor.fetchone()
-    print(company, fine=sys.stderr)
 
     if company is None:
         raise ValueError("No company found with id: %s" % company_id)
@@ -72,9 +71,9 @@ def getCompanyWithId(company_id):
         'name':company[1],
         'admin':admin,
         'user_ids':user_ids,
-        'created_at':company[4],
-        'updated_at':company[5],
-        'deleted_at':company[6]
+        'created_at':company[3],
+        'updated_at':company[4],
+        'deleted_at':company[5]
     }
 
     return returnVal
@@ -109,16 +108,19 @@ def postCompany(name, admin_id):
 def updateCompanyInfo(company_id, data):
     cursor= connection.cursor()
     updatedCompany = getCompanyWithId(company_id)
+    updatedCompany.pop('admin', None)
+    updatedCompany.pop('user_ids', None)
 
     for key, value in data.items():
-        updatedCompany[key] = value
+#        if key in updatedCompany:
+         updatedCompany[key] = value
 
     cursor.execute(update_company_info, updatedCompany)
 
     connection.commit()
     cursor.close()
 
-    return updatedUser
+    return updatedCompany
 
 def updateComapnyAdmin(company_id, user_id, username):
     cursor= connection.cursor()
