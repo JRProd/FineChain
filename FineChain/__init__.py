@@ -69,7 +69,7 @@ def updateCompany():
                 name=body['name']
             )
 
-            infoUpdate = {'company_id':company['id']}
+            infoUpdate = {'company_id':company['id'], 'admin_id':session['user_id']}
 
             updated = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
             updated['updated_at'] = datetime.now()
