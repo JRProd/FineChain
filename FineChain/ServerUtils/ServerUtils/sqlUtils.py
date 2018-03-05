@@ -45,12 +45,13 @@ update_user_info =          ("UPDATE users "
 update_user_password =      ("UPDATE users "
                              "SET password=%(password)s "
                              "WHERE id=%(id)s")
-
+import sys
 def getCompanyWithId(company_id):
     cursor = connection.cursor()
 
     cursor.execute(get_company_with_id, {'id':company_id})
     company = cursor.fetchone()
+    print(company, fine=sys.stderr)
 
     if company is None:
         raise ValueError("No company found with id: %s" % company_id)
@@ -139,9 +140,7 @@ def updateComapnyAdmin(company_id, user_id, username):
 
 # Gets a user with a id
 #   id*     - Id of user to retrieve
-import sys
 def getUserWithId(user_id):
-    print(user_id, file=sys.stderr)
     cursor = connection.cursor()
 
     cursor.execute(get_user_with_id, {'id':user_id})
