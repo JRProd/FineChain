@@ -139,7 +139,9 @@ def updateComapnyAdmin(company_id, user_id, username):
 
 # Gets a user with a id
 #   id*     - Id of user to retrieve
+import sys
 def getUserWithId(user_id):
+    print(user_id, file=sys.stderr)
     cursor = connection.cursor()
 
     cursor.execute(get_user_with_id, {'id':user_id})
