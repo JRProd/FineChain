@@ -77,7 +77,7 @@ def updateCompany():
         body = request.get_json()
 
         if session is not None:
-            user = sql.getUserWithId(session['user_id'])
+            user = sqlUtils.getUserWithId(session['user_id'])
             # Get all the possible changes that were submitted in the body
             changes = ['name', 'user_ids']
             infoUpdate = {}
