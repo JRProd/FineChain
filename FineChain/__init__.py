@@ -67,9 +67,10 @@ def updateCompany():
         if session is not None:
             company = sqlUtils.postCompany(
                 name=body['name']
+                admin_id=session['user_id']
             )
 
-            infoUpdate = {'company_id':company['id'], 'admin_id':session['user_id']}
+            infoUpdate = {'company_id':company['id']}
 
             updated = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
             updated['updated_at'] = datetime.now()
