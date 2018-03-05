@@ -7,7 +7,7 @@ connection = connector.connect(
 )
 
 get_company_with_id =       ("SELECT * "
-                             "FROM companys"
+                             "FROM companys "
                              "WHERE id=%(id)s")
 
 get_company_users =         ("SELECT id "
@@ -18,11 +18,11 @@ insert_company =            ("INSERT INTO companys "
                             "(name, admin_id) "
                             "VALUES (%(name)s, %(admin_id)s)")
 
-update_company_info         ("UPDATE companys "
+update_company_info =       ("UPDATE companys "
                              "SET name=%(name)s, user_ids=%(user_ids)s "
                              "WHERE id=%(id)s")
 
-update_company_admin =   ("UPDATE companys "
+update_company_admin =      ("UPDATE companys "
                              "SET admin_id=%(admin)s "
                              "WHERE id=%(id)s")
 
@@ -120,10 +120,12 @@ def updateComapnyAdmin(company_id, user_id, username):
     cursor= connection.cursor()
 
     admin = getUserWithId(user_id);
-    if admin['username'] not username:
+    if admin['username'] != username:
         #TODO: Define errors for not matching username
-    if admin['compnay_id'] not company_id:
+        pass
+    if admin['compnay_id'] != company_id:
         #TODO: User must be part of company to become admin
+        pass
 
     cursor.execute(update_user_password, {'admin_id':admin['id']})
 
