@@ -73,13 +73,46 @@ def updateCompany():
             body=company
         ).toJson(), 201
     else:
-        return 'PUT-Update a company'
+        user_id = JWT.get_jwt_identity()
+        body = request.get_json()
+
+        if user is not None:
+            user = sql.getUserWithId(user_id)
+            # Get all the possible changes that were submitted in the body
+            changes = ['name', 'user_ids']
+            infoUpdate = {}
+            for change in changes:
+                if change in body:
+                    infoUpdate[change] = body[change]
+
+            updated = sqlUtils.updateCompanyInfo(company_id=user['company_id'], data=infoUpdate)
+            updated['updated_at'] = datetime.now()
+
+            updateAdmin = False
+            if 'admin' in body:
+                admim = sqlUtils.updateCompanyAdmin(
+                    company_id=user['company_id'],
+                    id=body['admin']['id'],
+                    username=body['admin']['username']
+                )
+                updateAdmin = True
+
+            if updateAdmin:
+                updated['admin']=admin
+
+            return basicUtils.MessageResponse(
+                message='Company Updated',
+                body=updated
+            ).toJson(), 200
+
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>', methods=['GET'])
 def getCompany(company_id):
     return basicUtils.MessageResponse(
         message='Successfully got the COMPANY',
-        body=sqlUtils.getCompany(company_id)
+        body=sqlUtils.getCompanyWithId(company_id)
     ).toJson(), 200
 
 @app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
@@ -156,7 +189,7 @@ def updateUser():
             updatePass = False
             if 'password' in body:
                 password = authUtils.hash(body['password'])
-                sqlUtils.updateUserPassword(data={'id':user['user_id'], 'password':password})
+                sqlUtils.updateUserPassword(id=user['user_id'], password=password)
                 updatePass = True
 
             if updatePass:

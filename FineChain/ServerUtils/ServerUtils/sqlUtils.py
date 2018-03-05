@@ -6,17 +6,6 @@ connection = connector.connect(
     database='FineChain'
 )
 
-get_session =         ("SELECT * "
-                       "FROM sessions "
-                       "WHERE session=%(session)s")
-
-open_session =        ("INSERT INTO sessions "
-                       "(user_id, session, resession, deleted_at) "
-                       "VALUES (%(user_id)s, %(session)s, %(resession)s, %(deleted_at)s)")
-
-close_session =             ("DELETE FROM sessions "
-                             "WHERE session=%(session)s")
-
 get_company_with_id =       ("SELECT * "
                              "FROM companys"
                              "WHERE id=%(id)s")
@@ -28,6 +17,14 @@ get_company_users =         ("SELECT id "
 insert_company =            ("INSERT INTO companys "
                             "(name, admin_id) "
                             "VALUES (%(name)s, %(admin_id)s)")
+
+update_company_info         ("UPDATE companys "
+                             "SET name=%(name)s, user_ids=%(user_ids)s "
+                             "WHERE id=%(id)s")
+
+update_company_admin =   ("UPDATE companys "
+                             "SET admin_id=%(admin)s "
+                             "WHERE id=%(id)s")
 
 get_user_with_id =          ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
                              "FROM users "
@@ -49,45 +46,32 @@ update_user_password =      ("UPDATE users "
                              "SET password=%(password)s "
                              "WHERE id=%(id)s")
 
-def getSession(session):
-    cursor - connection.cursor()
-
-    session = cursor.execute(get_session, {'session':session})
-
-    returnVal = {
-        'id':session[0],
-        'user_id':session[1],
-        'session':session[2],
-        'resession':session[3],
-        'created_at':session[4],
-        'deleted_at':session[5],
-    }
-
-    return returnVal
-
-def openSession(user_id, session, resession, deleted_at):
+def getCompanyWithId(company_id):
     cursor = connection.cursor()
 
-    queryValues = {
-        'user_id':user_id,
-        'session':session,
-        'resession':resession,
-        'deleted_at':deleted_at
-    }
+    cursor.execute(get_company_with_id, {'id':company_id})
+    company = cursor.fetchone()
 
-    cursor.execute(open_session, queryValues)
-    id = cursor.lastrowid
+    admin = getUserWithId(company[2])
+    # Remove unimportant values from the admin
+    admin.pop('company_id', None)
+    admin.pop('updated_at', None)
+    admin.pop('deleted_at', None)
+
+    cursor.execute(get_company_users, {'id':company_id})
+    user_ids = []
+    for (id,) in cursor:
+        user_ids.append(id)
 
     returnVal = {
-        'id':id,
-        'user_id':user_id,
-        'session':session,
-        'resession':resession,
-        'deleted_at':deleted_at
+        'id':company[0],
+        'name':company[1],
+        'admin':admin,
+        'user_ids':user_ids,
+        'created_at':company[4],
+        'updated_at':company[5],
+        'deleted_at':company[6]
     }
-
-    connection.commit()
-    cursor.close()
 
     return returnVal
 
@@ -118,34 +102,35 @@ def postCompany(name, admin_id):
 
     return returnVal
 
-def getCompany(company_id):
-    cursor = connection.cursor()
+def updateCompanyInfo(company_id, data):
+    cursor= connection.cursor()
+    updatedCompany = getCompanyWithId(company_id)
 
-    cursor.execute(get_company_with_id, {'id':company_id})
-    company = cursor.fetchone()
+    for key, value in data.items():
+        updatedCompany[key] = value
 
-    admin = getUserWithId(company[2])
-    # Remove unimportant values from the admin
-    admin.pop('company_id', None)
-    admin.pop('updated_at', None)
-    admin.pop('deleted_at', None)
+    cursor.execute(update_company_info, updatedCompany)
 
-    cursor.execute(get_company_users, {'id':company_id})
-    user_ids = []
-    for (id,) in cursor:
-        user_ids.append(id)
+    connection.commit()
+    cursor.close()
 
-    returnVal = {
-        'id':company[0],
-        'name':company[1],
-        'admin':admin,
-        'user_ids':user_ids,
-        'created_at':company[4],
-        'updated_at':company[5],
-        'deleted_at':company[6]
-    }
+    return updatedUser
 
-    return returnVal
+def updateComapnyAdmin(company_id, user_id, username):
+    cursor= connection.cursor()
+
+    admin = getUserWithId(user_id);
+    if admin['username'] not username:
+        #TODO: Define errors for not matching username
+    if admin['compnay_id'] not company_id:
+        #TODO: User must be part of company to become admin
+
+    cursor.execute(update_user_password, {'admin_id':admin['id']})
+
+    connection.commit()
+    cursor.close()
+
+    return admin;
 
 # Gets a user with a id
 #   id*     - Id of user to retrieve
@@ -236,10 +221,10 @@ def updateUserInfo(user_id, data):
 
     return updatedUser
 
-def updateUserPassword(data):
+def updateUserPassword(user_id, password):
     cursor= connection.cursor()
 
-    cursor.execute(update_user_password, data)
+    cursor.execute(update_user_password, {'id':user_id, 'password':password})
 
     connection.commit()
     cursor.close()
