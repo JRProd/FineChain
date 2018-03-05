@@ -73,11 +73,11 @@ def updateCompany():
             body=company
         ).toJson(), 201
     else:
-        user_id = JWT.get_jwt_identity()
+        session = JWT.get_jwt_identity()
         body = request.get_json()
 
-        if user is not None:
-            user = sql.getUserWithId(user_id)
+        if session is not None:
+            user = sql.getUserWithId(session['user_id'])
             # Get all the possible changes that were submitted in the body
             changes = ['name', 'user_ids']
             infoUpdate = {}
@@ -178,10 +178,10 @@ def updateUser():
             body=user
         ).toJson(), 201
     else:
-        user = JWT.get_jwt_identity()
+        session = JWT.get_jwt_identity()
         body = request.get_json()
 
-        if user is not None:
+        if session is not None:
             # Get all the possible changes that were submitted in the body
             changes = ['name', 'email']
             infoUpdate = {}
@@ -189,13 +189,13 @@ def updateUser():
                 if change in body:
                     infoUpdate[change] = body[change]
 
-            updated = sqlUtils.updateUserInfo(user_id=user['user_id'], data=infoUpdate)
+            updated = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
             updated['updated_at'] = datetime.now()
 
             updatePass = False
             if 'password' in body:
                 password = authUtils.hash(body['password'])
-                sqlUtils.updateUserPassword(id=user['user_id'], password=password)
+                sqlUtils.updateUserPassword(id=session['user_id'], password=password)
                 updatePass = True
 
             if updatePass:
