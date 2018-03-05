@@ -13,7 +13,7 @@ def authenticate(username, challenge):
 
     #TODO Authenticate should not return true. TESTING
     #return (True, user['id'])
-    return (compare(challenge, actual), user)
+    return (compare(challenge, actual), user['user_id'])
 
 def compare(challenge, actual):
     return sha512.verify(challenge, actual)
