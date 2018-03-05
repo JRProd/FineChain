@@ -76,8 +76,8 @@ def updateCompany():
         user_id = JWT.get_jwt_identity()
         body = request.get_json()
 
-        if user is not None:
-            user = sql.getUserWithId(user_id)
+        if user_id is not None:
+            user = sqlUtils.getUserWithId(user_id)
             # Get all the possible changes that were submitted in the body
             changes = ['name', 'user_ids']
             infoUpdate = {}
