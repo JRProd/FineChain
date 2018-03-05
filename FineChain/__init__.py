@@ -58,20 +58,28 @@ def authenticate():
 ## COMPANY Endpoints ##
 #######################
 @app.route('/company', methods=['POST', 'PUT'])
-@JWT.jwt_optional
+@JWT.jwt_required
 def updateCompany():
     if request.method == 'POST':
+        session = JWT.get_jwt_identity()
         body = request.get_json()
 
-        company = sqlUtils.postCompany(
-            name=body['name'],
-            admin_id=body['admin_id']
-        )
+        if session is not None:
+            company = sqlUtils.postCompany(
+                name=body['name']
+            )
 
-        return basicUtils.MessageResponse(
-            message='Successfully created new COMPANY',
-            body=company
-        ).toJson(), 201
+            infoUpdate = {'company_id':company['id']}
+
+            updated = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
+            updated['updated_at'] = datetime.now()
+
+            return basicUtils.MessageResponse(
+                message='Successfully created new COMPANY',
+                body=company
+            ).toJson(), 201
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
     else:
         session = JWT.get_jwt_identity()
         body = request.get_json()
@@ -79,6 +87,13 @@ def updateCompany():
         if session is not None:
             user = sqlUtils.getUserWithId(session['user_id'])
             # Get all the possible changes that were submitted in the body
+
+            if user['company_id'] is None:
+                return basicUtils.notFoundResponse(
+                    object='Company associated with this users',
+                    value=user['id']
+                ).toJson(), 404
+
             changes = ['name', 'user_ids']
             infoUpdate = {}
             for change in changes:

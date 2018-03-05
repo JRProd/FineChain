@@ -39,7 +39,7 @@ insert_user =               ("INSERT INTO users "
                              "VALUES (%(name)s, %(email)s, %(username)s, %(password)s)")
 
 update_user_info =          ("UPDATE users "
-                             "SET name=%(name)s, email=%(email)s "
+                             "SET name=%(name)s, email=%(email)s, company_id=%(company_id)s "
                              "WHERE id=%(id)s")
 
 update_user_password =      ("UPDATE users "
