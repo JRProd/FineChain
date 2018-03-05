@@ -21,7 +21,7 @@ unauthroized_response = MessageResponse(
 def notFoundResponse(object=None, value=None):
     if object is None:
         object = 'Object'
-     return MessageResponse(
+    return MessageResponse(
         message='%s is not found' % object,
         body=value
      )
