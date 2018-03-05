@@ -66,7 +66,7 @@ def updateCompany():
 
         if session is not None:
             company = sqlUtils.postCompany(
-                name=body['name']
+                name=body['name'],
                 admin_id=session['user_id']
             )
 
