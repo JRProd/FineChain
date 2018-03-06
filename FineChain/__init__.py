@@ -181,7 +181,7 @@ def addUserToCompany(company_id):
                 responses.append(removedUser)
 
             return basicUtils.MessageResponse(
-                message='Users added.',
+                message='Users removed.',
                 body={'users':responses}
             ).toJson(), 200
         else:
