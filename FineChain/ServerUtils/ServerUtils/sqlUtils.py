@@ -152,7 +152,7 @@ def addUserToCompany(company_id, user_id, username):
     returnVal = {
         'user_id':user_id,
         'user_ids':username,
-        'company_id':compay_id,
+        'company_id':company_id,
         'success':True,
         'message':'User added.'
     }
