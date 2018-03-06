@@ -88,8 +88,6 @@ def postCompany(name, admin_id):
 
     admin = getUserWithId(admin_id)
     # Remove unimportant values from the admin
-    admin.pop('company_id', None)
-    admin.pop('updated_at', None)
     admin.pop('deleted_at', None)
 
     returnVal = {
@@ -123,7 +121,7 @@ def updateCompanyInfo(company_id, data):
     return updatedCompany
 
 def updateComapnyAdmin(company_id, user_id, username):
-    cursor= connection.cursor()
+    cursor = connection.cursor()
 
     admin = getUserWithId(user_id);
     if admin['username'] != username:
@@ -139,6 +137,47 @@ def updateComapnyAdmin(company_id, user_id, username):
     cursor.close()
 
     return admin;
+
+# Updates a user to reflect which company they are
+def addUserToCompany(company_id, user_id, username):
+    user = getUserWithId(user_id)
+    if user['username'] != username:
+        # TODO Usernames must match
+        pass
+    if user['company_id'] is not None:
+        # TODO User must not be part of any other company
+        pass
+
+    updateUser(user_id, {'company_id':company_id})
+    returnVal = {
+        'user_id':user_id,
+        'user_ids':username,
+        'company_id':compay_id,
+        'success':True,
+        'message':'User added.'
+    }
+
+    return returnVal
+
+def removeUserFromCompany(company_id, user_id, username):
+    user = getUserWithId(user_id)
+    if user['username'] != username:
+        # TODO Usernames must match
+        pass
+    if user['company_id'] != company_id:
+        # TODO User must be part of any other company
+        pass
+
+    updateUser(user_id, {'company_id':None})
+    returnVal = {
+        'user_id':user_id,
+        'username':username,
+        'company_id':None,
+        'success':True,
+        'message':'User removed.'
+    }
+
+    return returnVal
 
 # Gets a user with a id
 #   id*     - Id of user to retrieve

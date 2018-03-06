@@ -141,9 +141,51 @@ def getCompany(company_id):
 @JWT.jwt_required
 def addUserToCompany(company_id):
     if request.method == 'POST':
-        return 'POST-Add user to a company'
+        session = JWT.get_jwt_identity()
+        body = request.get_json()
+
+        if session is not None:
+            admin = sqlUtils.getUserWithId(session['user_id'])
+
+            users = body['users']
+            responses = []
+            for user in users:
+                addedUser = sqlUtils.addUserToCompany(
+                    company_id=admin['company_id'],
+                    user_id=user['id'],
+                    username=user['username']
+                )
+                responses.append(addedUser)
+
+            return basicUtils.MessageResponse(
+                message='Users added.',
+                body={'users':responses}
+            ).toJson, 200
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
     else:
-        return 'DELETE-Remove a user from a company'
+        session = JWT.get_jwt_identity()
+        body = request.get_json()
+
+        if session is not None:
+            admin = sqlUtils.getUserWithId(session['user_id'])
+
+            users = body['users']
+            responses = []
+            for user in users:
+                removedUser = sqlUtils.removeUserFromCompany(
+                    company_id=admin['company_id'],
+                    user_id=user['id'],
+                    username=user['username']
+                )
+                responses.append(addedUser)
+
+            return basicUtils.MessageResponse(
+                message='Users added.',
+                body={'users':responses}
+            ).toJson, 200
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>/fullchain', methods=['GET'])
 @JWT.jwt_required
