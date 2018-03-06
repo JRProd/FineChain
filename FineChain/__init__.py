@@ -160,7 +160,7 @@ def addUserToCompany(company_id):
             return basicUtils.MessageResponse(
                 message='Users added.',
                 body={'users':responses}
-            ).toJson, 200
+            ).toJson(), 200
         else:
             return basicUtils.unauthroized_response.toJson(), 401
     else:
@@ -183,7 +183,7 @@ def addUserToCompany(company_id):
             return basicUtils.MessageResponse(
                 message='Users added.',
                 body={'users':responses}
-            ).toJson, 200
+            ).toJson(), 200
         else:
             return basicUtils.unauthroized_response.toJson(), 401
 
