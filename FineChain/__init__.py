@@ -178,7 +178,7 @@ def addUserToCompany(company_id):
                     user_id=user['id'],
                     username=user['username']
                 )
-                responses.append(addedUser)
+                responses.append(removedUser)
 
             return basicUtils.MessageResponse(
                 message='Users added.',
