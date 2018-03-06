@@ -148,7 +148,7 @@ def addUserToCompany(company_id, user_id, username):
         # TODO User must not be part of any other company
         pass
 
-    updateUser(user_id, {'company_id':company_id})
+    updateUserInfo(user_id, {'company_id':company_id})
     returnVal = {
         'user_id':user_id,
         'user_ids':username,
@@ -168,7 +168,7 @@ def removeUserFromCompany(company_id, user_id, username):
         # TODO User must be part of any other company
         pass
 
-    updateUser(user_id, {'company_id':None})
+    updateUserInfo(user_id, {'company_id':None})
     returnVal = {
         'user_id':user_id,
         'username':username,
