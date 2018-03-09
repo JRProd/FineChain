@@ -191,7 +191,7 @@ def postBlockchain(company_id):
 
     returnVal = {
         'id':id,
-        'compnay_id', company_id,
+        'compnay_id':company_id,
         'current_hash':None,
     }
 
