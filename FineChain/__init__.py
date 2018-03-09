@@ -3,7 +3,12 @@
 import sys, os
 from datetime import datetime
 
-from flask import Flask, request, Response
+from flask import (
+        Flask,
+        request,
+        Response,
+        send_from_directory
+)
 import flask_jwt_extended as JWT
 
 app = Flask(__name__)
@@ -191,9 +196,9 @@ def addUserToCompany(company_id):
 @app.route('/company/<int:company_id>/fullchain', methods=['GET'])
 @JWT.jwt_required
 def getFullchain(company_id):
-    fileLocation = os.path.join(current_app.root_path, app.config['COMPANY_LOCATION']) + '/' + str(company_id)
+    fileLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
     print(fileLocation, file=sys.stderr)
-    return send_from_directory(directory=fileLocation, file='blockchain.json')
+    return send_from_directory(directory=fileLocation, filename='blockchain.json')
 
 @app.route('/company/<int:company_id>/post', methods=['POST'])
 @JWT.jwt_required
