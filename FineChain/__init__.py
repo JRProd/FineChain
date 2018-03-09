@@ -98,7 +98,7 @@ def updateCompany():
                 '"metadata":{"company_id":%(company_id)s, "admin_id":%(admin_id)s, "created_at":"%(time)s"},'
                 % {'company_id':company['id'], 'admin_id':session['user_id'], 'time':datetime.now()}
             )
-            blockchain.write('blocks:[]')
+            blockchain.write('"blocks":[]')
             blockchain.write('}')
             blockchain.close()
 
