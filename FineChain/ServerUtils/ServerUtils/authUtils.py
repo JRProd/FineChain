@@ -26,4 +26,4 @@ def hash(password):
 
 def userPartOfCompany(user_id, company_id):
     user = sqlUtils.getUserWithId(user_id)
-    return user['company_id'] = company_id
+    return user['company_id'] == company_id
