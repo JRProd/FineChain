@@ -1,6 +1,6 @@
 #!/bin/usr/python
 
-import sys, os
+import sys, os, pathlib
 from datetime import datetime
 
 from flask import (
@@ -77,15 +77,24 @@ def updateCompany():
         body = request.get_json()
 
         if session is not None:
+            # Create company
             company = sqlUtils.postCompany(
                 name=body['name'],
                 admin_id=session['user_id']
             )
 
-            infoUpdate = {'company_id':company['id']}
+            # Create blockchain and file location
+            company['blockchain'] = sqlUtils.postBlockchain(company_id=company['id'])
+            blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company['id'])
+            blockFile = blockLocation + '/blockchain.json'
+            pathlib.Path(blockLocation).mkdir(parents=False, mode=0o744, exist_ok=True)
+            blockchain = open(blockFile, 'w')
+            blockchain.write('\{\}')
 
-            updated = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
-            updated['updated_at'] = datetime.now()
+            # Update user after company is created
+            infoUpdate = {'company_id':company['id']}
+            company['admin'] = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
+            company['admin']['updated_at'] = datetime.now()
 
             return basicUtils.MessageResponse(
                 message='Successfully created new COMPANY',
@@ -205,12 +214,11 @@ def getFullchain(company_id):
     session = JWT.get_jwt_identity()
 
     if authUtils.userPartOfCompany(session['user_id'], company_id):
-        fileLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
+        blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
 
         try:
             return send_from_directory(directory=fileLocation, filename='blockchain.json'), 200
         except NotFound as exc:
-            print(type(exc), file=sys.stderr)
             return basicUtils.notFoundResponse(
                 object='Company',
                 value=company_id

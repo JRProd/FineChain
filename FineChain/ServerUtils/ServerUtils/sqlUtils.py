@@ -26,6 +26,10 @@ update_company_admin =      ("UPDATE companys "
                              "SET admin_id=%(admin)s "
                              "WHERE id=%(id)s")
 
+insert_blockchain =         ("INSERT INTO blockchains "
+                             "(company_id) "
+                             "VALUES (%(company_id)s)")
+
 get_user_with_id =          ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
                              "FROM users "
                              "WHERE id=%(id)s")
@@ -175,6 +179,20 @@ def removeUserFromCompany(company_id, user_id, username):
         'company_id':None,
         'success':True,
         'message':'User removed.'
+    }
+
+    return returnVal
+
+def postBlockchain(company_id):
+    cursor = connection.cursor()
+
+    cursor.execute(insert_blockchain, {'company_id':company_id})
+    id = cursor.lastrowid
+
+    returnVal = {
+        'id':id,
+        'compnay_id', company_id,
+        'current_hash':None,
     }
 
     return returnVal
