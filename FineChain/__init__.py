@@ -9,6 +9,7 @@ from flask import (
         Response,
         send_from_directory
 )
+from werkzeug.exceptions import NotFound
 import flask_jwt_extended as JWT
 
 app = Flask(__name__)
@@ -208,8 +209,8 @@ def getFullchain(company_id):
 
         try:
             return send_from_directory(directory=fileLocation, filename='blockchain.json'), 200
-        except Exception as exc:
-            print(type(exc) file=sys.stderr)
+        except NotFound as exc:
+            print(type(exc), file=sys.stderr)
             return basicUtils.notFoundResponse(
                 object='Company',
                 value=company_id
