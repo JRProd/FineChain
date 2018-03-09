@@ -98,7 +98,7 @@ def postCompany(name, admin_id):
         'id':id,
         'name':name,
         'admin':admin,
-        'user_ids':[],
+        'user_ids':[admin_id],
         'blockchain':{},
     }
 

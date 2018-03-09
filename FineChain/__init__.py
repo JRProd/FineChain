@@ -87,9 +87,9 @@ def updateCompany():
             company['blockchain'] = sqlUtils.postBlockchain(company_id=company['id'])
             blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company['id'])
             blockFile = blockLocation + '/blockchain.json'
-            pathlib.Path(blockLocation).mkdir(parents=False, mode=0o744, exist_ok=True)
+            pathlib.Path(blockLocation).mkdir(parents=False, mode=0o774, exist_ok=True)
             blockchain = open(blockFile, 'w')
-            blockchain.write('\{\}')
+            blockchain.write('{}')
 
             # Update user after company is created
             infoUpdate = {'company_id':company['id']}
