@@ -29,6 +29,11 @@ def home():
 def isRunning():
     return 'Yes, the flask app is running!'
 
+@app.errorhandler(404)
+def pageNotFound(err):
+    return basicUtils.MessageResponse(
+        message='Default 404'
+    ).toJson()
 
 ####################
 ## AUTH Endpoints ##
@@ -196,9 +201,20 @@ def addUserToCompany(company_id):
 @app.route('/company/<int:company_id>/fullchain', methods=['GET'])
 @JWT.jwt_required
 def getFullchain(company_id):
-    fileLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
-    print(fileLocation, file=sys.stderr)
-    return send_from_directory(directory=fileLocation, filename='blockchain.json')
+    session = JWT.get_jwt_identity()
+
+    if authUtils.userPartOfCompany(session['user_id'], company_id):
+        fileLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
+
+        try:
+            return send_from_directory(directory=fileLocation, filename='blockchain.json'), 200
+        except:
+            return basicUtils.notFoundResponse(
+                object='Company',
+                value=company_id
+            ).toJson()
+    else:
+        return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>/post', methods=['POST'])
 @JWT.jwt_required
