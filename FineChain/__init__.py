@@ -94,7 +94,7 @@ def updateCompany():
             # Write metadata to the file
             blockchain = open(blockFile, 'w')
             blockchain.write(
-                '{"metadata":{"company_id":%(company_id)s, "admin_id":%(admin_id)s, "created_at":""%(time)s"}}'
+                '{"metadata":{"company_id":%(company_id)s, "admin_id":%(admin_id)s, "created_at":"%(time)s"}}'
                 % {'company_id':company['id'], 'admin_id':session['user_id'], 'time':datetime.now()}
             )
             blockchain.close()
