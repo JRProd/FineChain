@@ -208,11 +208,12 @@ def getFullchain(company_id):
 
         try:
             return send_from_directory(directory=fileLocation, filename='blockchain.json'), 200
-        except:
+        except Exception as exc:
+            print(type(exc) file=sys.stderr)
             return basicUtils.notFoundResponse(
                 object='Company',
                 value=company_id
-            ).toJson()
+            ).toJson(), 404
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
