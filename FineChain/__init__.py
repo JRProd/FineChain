@@ -40,6 +40,15 @@ def pageNotFound(err):
 def expiredTokenLoaderCallback():
     return basicUtils.expired_token.toJson()
 
+#####################
+## REFRESH Endpoin ##
+#####################
+@app.route('/refresh', methods=['GET'])
+@JWT.jwt_refress_token_required
+def refresh():
+    session = JWT.get_jwt_identity()
+    return {'session':JWT.create_access_token(identity=session)}
+
 ####################
 ## AUTH Endpoints ##
 ####################
@@ -57,6 +66,7 @@ def authenticate():
         if success:
             session = {
                 'session':JWT.create_access_token(identity={'user_id':user_id})
+                'refresh':JWT.create_refresh_token(identity={'user_id':user_id})
             }
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
