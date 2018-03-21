@@ -1,5 +1,5 @@
 import sys
-from time import time
+from datetime import datetime as time
 import hashlib
 import json
 import urllib
@@ -12,6 +12,12 @@ class Blockchain:
 		self.current_transactions = []
 		self.append_block(prev_hash='1')
 		self.nodes = set()
+		self.id = None
+		self.company_id = None
+		self.current_hash = None #do i really need this?
+		self.created = None
+		self.updated = None
+		self.deleted = None
 
 	def append_block(self, prev_hash):
 		# Create new block and append to blockchain
@@ -20,7 +26,7 @@ class Blockchain:
 
 		block = {
 			'index': len(self.chain) + 1,
-			'timestamp': time(),
+			'timestamp': str(time.now()),
 			'transactions': self.current_transactions,
 			'prev_hash': prev_hash
 		}
@@ -33,21 +39,27 @@ class Blockchain:
 		# param amount: amount of money being exchanged
 		# param sender: who money is being sent from
 		# param recipient: who money is being sent to
-		# return: the previou's block's location incremented
+		# return: the previous block's location incremented
+		#print(self.prev_block()['prev_hash'])
+		if len(self.current_transactions) == 100:
+			self.append_block(self.hash(self.prev_block())) #setting a limit of 100 transactions per block
 
 		transaction = {
 			'amount': amount,
 			'sender': sender,
-			'recipient': recipient
+			'recipient': recipient,
+			'timestamp': str(time.now())
+
 		}
 		self.current_transactions.append(transaction)
+
+
 
 		return self.prev_block()['index'] + 1
 
 	def prev_block(self):
 		# Return the previous block
 		# return: previous block
-
 		return self.chain[-1]
 
 	def hash(self,block):
@@ -110,8 +122,51 @@ class Blockchain:
 			print(block)
 			print('\n')
 
+	def set_id(self, num):
+		self.id = num
+
+	def get_id(self):
+		return self.id
+
+#Add mutators and all that stuff to these
+class User:
+	def __init__(self):
+		self.id = None
+		self.name = ''
+		self.login = ''
+		self.password = ''
+		self.salt = ''
+		self.company_id = ''
+		self.created = None
+		self.updated = None
+		self.deleted = None
+
+class Company:
+	def __init__(self):
+		self.id = None
+		self.name = ''
+		self.admin_id = None
+		self.users_id = None
+		self.blockchain_id = None
+		self.created = None
+		self.updated = None
+		self.deleted = None
+
+	def set_id(self, num):
+		self.id = num
+
+	def get_id(self):
+		return self.id
+
+
+#Flask stuff starts here
+app = Flask(__name__)
+
+
+
 if __name__ == '__main__':
 	print("This file runs correctly.")
+	co = Company()
 	bc = Blockchain()
 	bc.append_transaction(123,"Alice","Bob")
 	bc.append_transaction(1231253123,"Bob","Charlie")
@@ -120,5 +175,272 @@ if __name__ == '__main__':
 	bc.append_transaction(12313323123,"Bob","Charlie")
 	bc.append_transaction(12377123123,"Bob","Charlie")
 	bc.append_transaction(12344123123,"Bob","Charlie")
-	bc.append_block(bc.hash(bc.prev_block()))
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(123,"Alice","Bob")
+	bc.append_transaction(1231253123,"Bob","Charlie")
+	bc.append_transaction(12312443123,"Bob","Charlie")
+	bc.append_transaction(12312223123,"Bob","Charlie")
+	bc.append_transaction(12313323123,"Bob","Charlie")
+	bc.append_transaction(12377123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	bc.append_transaction(12344123123,"Bob","Charlie")
+	#bc.append_block(bc.hash(bc.prev_block()))
 	bc.print_chain()
