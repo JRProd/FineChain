@@ -44,7 +44,7 @@ def expiredTokenLoaderCallback():
 ## REFRESH Endpoin ##
 #####################
 @app.route('/refresh', methods=['GET'])
-@JWT.jwt_refress_token_required
+@JWT.jwt_refresh_token_required
 def refresh():
     session = JWT.get_jwt_identity()
     return {'session':JWT.create_access_token(identity=session)}
