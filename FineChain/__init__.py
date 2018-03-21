@@ -52,7 +52,7 @@ def refresh():
     }
     return basicUtils.MessageResponse(
         message='New session token created',
-        body=session
+        body=newSession
     ).toJson(), 200
 
 ####################
