@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
 app.config['COMPANY_LOCATION'] = 'files/'
 
-jwt = JWT.JWT(app)
+jwt = JWT.JWTManager(app)
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
 
@@ -36,9 +36,9 @@ def pageNotFound(err):
         message='Default 404'
     ).toJson()
 
-@jwt.error_handler
-def authenticationErrorHandler(err):
-    print(err, file=std.err)
+@jwt.expired_token_loader
+def expiredTokenLoaderCallback():
+    return basicUtils.expired_token.toJson()
 
 ####################
 ## AUTH Endpoints ##
