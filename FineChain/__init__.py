@@ -36,7 +36,7 @@ def pageNotFound(err):
         message='Default 404'
     ).toJson()
 
-@JWT.error_handler
+@jwt.error_handler
 def authenticationErrorHandler(err):
     print(err, file=std.err)
 
