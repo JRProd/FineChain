@@ -26,6 +26,10 @@ update_company_admin =      ("UPDATE companys "
                              "SET admin_id=%(admin)s "
                              "WHERE id=%(id)s")
 
+get_current_hash =          ("SELECT current_hash"
+                             "FROM blockchains "
+                             "WHERE company_id=%(company_id)s")
+
 insert_blockchain =         ("INSERT INTO blockchains "
                              "(company_id) "
                              "VALUES (%(company_id)s)")
@@ -182,6 +186,13 @@ def removeUserFromCompany(company_id, user_id, username):
     }
 
     return returnVal
+
+def getBlockchainHash(company_id):
+    cursor = connection.cursor()
+
+    currentHash = cursor.execute(get_current_hash, {'compnay_id':company_id})
+
+    return currentHash[0]
 
 def postBlockchain(company_id):
     cursor = connection.cursor()

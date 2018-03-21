@@ -36,6 +36,10 @@ def pageNotFound(err):
         message='Default 404'
     ).toJson()
 
+@JWT.jwt_error_handler
+def authenticationErrorHandler(err):
+    print(err, file=std.err)
+
 ####################
 ## AUTH Endpoints ##
 ####################
@@ -250,7 +254,28 @@ def getUpdatedBlockchain(company_id):
 @app.route('/company/<int:company_id>/verify', methods=['GET'])
 @JWT.jwt_required
 def verifyBlockchain(company_id):
-    return 'GET-Verify blockchain for company'
+    session = JST.get_jwt_identity()
+    body = request.get_json()
+
+    if session is not None:
+        if authUtils.userPartOfCompany(session['user_id'], company_id):
+            currentHash = sqlUtils.getBlockchainHash(company_id)
+            if body['current_hash'] == currentHash:
+                return basicUtils.MessageResponse(
+                    message='Current hash matches the serverside hash'
+                ).toJson, 200
+            else:
+                return basicUtils.MessageResponse(
+                    message='Your current hash does not match the server\'s hash',
+                    body={
+                        'client_hash':body['current_hash'],
+                        'server_hash':currentHash
+                    }
+                )
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
+    else:
+        return basicUtils.unauthroized_response.toJson(), 401
 
 
 #####################
