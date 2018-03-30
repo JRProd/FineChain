@@ -22,12 +22,12 @@ jwt = JWT.JWTManager(app)
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
 
-import Blockchain, BlockchainBuffer
+from Blockchain.Blockchain import Blockchain
 from BlockchainBuffer.BlockchainBuffer import BlockchainBuffer
-
-blockchainBuffer = BlockchainBuffer()
-blockchainBuffer.root_path = app.root_path
-blockchainBuffer.company_location = company_loc=app.config['COMPANY_LOCATION']
+blockchainBuffer = BlockchainBuffer(
+    root_loc=app.root_path,
+    company_loc=app.config['COMPANY_LOCATION']
+)
 
 ####################
 ## TEST Endpoints ##
@@ -114,11 +114,11 @@ def updateCompany():
 
             # Create blockchain and file location
             company['blockchain'] = sqlUtils.postBlockchain(company_id=company['id'])
-            companyBlockchain = Blockchain(id=company['blockcahin']['id'], company_id=company['id'])
+            companyBlockchain = Blockchain(id=company['blockchain']['id'], company_id=company['id'])
             # Create the directory for the company
             blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company['id'])
             pathlib.Path(blockLocation).mkdir(parents=False, mode=0o774, exist_ok=True)
-            blockFile = open(blockLocation + '/blockchain.pkl')
+            blockFile = open(blockLocation + '/blockchain.pkl', 'wb')
 
             pickle.dump(companyBlockchain, blockFile)
 

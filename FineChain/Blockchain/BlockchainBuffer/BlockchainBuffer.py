@@ -3,7 +3,7 @@ import pickle
 
 size = 16
 class BlockchainBuffer():
-    def __init__(self, size=size, root_loc, company_loc):
+    def __init__(self, root_loc, company_loc, size=size):
         self.size = size
         self.root_path = root_loc
         self.compnay_location = company_loc
@@ -11,16 +11,15 @@ class BlockchainBuffer():
         self.buffer = [None]*16
 
     def addTransaction(self, company_id, transaction=None):
-        location = isCompanyInBuffer(company_id)
+        location = self.isCompanyInBuffer(company_id)
         if location:
-            buffer[location].addTransaction(transaction)
+            self.buffer[location].addTransaction(transaction)
         else:
-            addedLocation = 4
-            anotherVar = 14
-            addBlockchainToBuffer(company_id)
+            self.addBlockchainToBuffer(company_id)
+            addedLocation = self.nextOpen - 1
             if addedLocation < 0:
                  addedLocation = 15
-            buffer[addedLocation].addTransaction(transaction)
+            self.buffer[addedLocation].addTransaction(transaction)
 
     def isCompanyInBuffer(self, company_id):
         for i in range(0, self.size):
