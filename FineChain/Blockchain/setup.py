@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-setup(name='Blockchian',
+setup(name='Blockchain',
       version='1.0.1-experimental',
       description='Basic utilities for the FineChain server',
       author='Jake Rowland',
