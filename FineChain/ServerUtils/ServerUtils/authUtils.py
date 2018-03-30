@@ -24,22 +24,6 @@ def generateToken(seed):
 def hash(password):
     return sha512.hash(password)
 
-def getSession(headers):
-    authHeader = headers['Authorization']
-    print(authHeader, file=sys.stderr)
-    #tokenType = authHeader[0]
-    #token = authHeader[1]
-
-    #if tokenType == 'Bearer':
-        #return (True, sqlUtils.getSession(token))
-    #else:
-        #return (False, None)
-
-
-def createSession(user_id):
-    session = generateToken(str(user_id) + str(datetime.time))
-    resession = generateToken(datetime.time)
-
-    sessionExperation = (datetime.now() + timedelta(minutes=240)).strftime('%Y-%m-%d %H:%M:%S')
-
-    return sqlUtils.openSession(user_id, session, resession, sessionExperation)
+def userPartOfCompany(user_id, company_id):
+    user = sqlUtils.getUserWithId(user_id)
+    return user['company_id'] == company_id

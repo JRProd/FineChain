@@ -18,6 +18,10 @@ unauthroized_response = MessageResponse(
     message='Unauthorized access'
 )
 
+expired_token = MessageResponse(
+    message='Your token has expired'
+)
+
 def notFoundResponse(object=None, value=None):
     if object is None:
         object = 'Object'

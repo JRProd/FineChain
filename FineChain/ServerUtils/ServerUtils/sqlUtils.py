@@ -26,6 +26,14 @@ update_company_admin =      ("UPDATE companys "
                              "SET admin_id=%(admin)s "
                              "WHERE id=%(id)s")
 
+get_current_hash =          ("SELECT current_hash"
+                             "FROM blockchains "
+                             "WHERE company_id=%(company_id)s")
+
+insert_blockchain =         ("INSERT INTO blockchains "
+                             "(company_id) "
+                             "VALUES (%(company_id)s)")
+
 get_user_with_id =          ("SELECT id, name, email, company_id, username, created_at, updated_at, deleted_at "
                              "FROM users "
                              "WHERE id=%(id)s")
@@ -94,7 +102,7 @@ def postCompany(name, admin_id):
         'id':id,
         'name':name,
         'admin':admin,
-        'user_ids':[],
+        'user_ids':[admin_id],
         'blockchain':{},
     }
 
@@ -148,11 +156,11 @@ def addUserToCompany(company_id, user_id, username):
         # TODO User must not be part of any other company
         pass
 
-    updateUser(user_id, {'company_id':company_id})
+    updateUserInfo(user_id, {'company_id':company_id})
     returnVal = {
         'user_id':user_id,
         'user_ids':username,
-        'company_id':compay_id,
+        'company_id':company_id,
         'success':True,
         'message':'User added.'
     }
@@ -168,13 +176,34 @@ def removeUserFromCompany(company_id, user_id, username):
         # TODO User must be part of any other company
         pass
 
-    updateUser(user_id, {'company_id':None})
+    updateUserInfo(user_id, {'company_id':None})
     returnVal = {
         'user_id':user_id,
         'username':username,
         'company_id':None,
         'success':True,
         'message':'User removed.'
+    }
+
+    return returnVal
+
+def getBlockchainHash(company_id):
+    cursor = connection.cursor()
+
+    currentHash = cursor.execute(get_current_hash, {'compnay_id':company_id})
+
+    return currentHash[0]
+
+def postBlockchain(company_id):
+    cursor = connection.cursor()
+
+    cursor.execute(insert_blockchain, {'company_id':company_id})
+    id = cursor.lastrowid
+
+    returnVal = {
+        'id':id,
+        'compnay_id':company_id,
+        'current_hash':None,
     }
 
     return returnVal

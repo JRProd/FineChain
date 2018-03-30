@@ -1,15 +1,23 @@
 #!/bin/usr/python
 
-import sys
+import sys, os, pathlib
 from datetime import datetime
 
-from flask import Flask, request, Response
+from flask import (
+        Flask,
+        request,
+        Response,
+        send_from_directory
+)
+from werkzeug.exceptions import NotFound
 import flask_jwt_extended as JWT
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
+app.config['COMPANY_LOCATION'] = 'files/'
 
 jwt = JWT.JWTManager(app)
+
 
 from ServerUtils import authUtils, basicUtils, blockchainUtils, sqlUtils
 blockchainUtils.initBuffer(root_path=app.root_path, company_location=app.config['COMPANY_LOCATION'])
@@ -24,6 +32,30 @@ def home():
 def isRunning():
     return 'Yes, the flask app is running!'
 
+@app.errorhandler(404)
+def pageNotFound(err):
+    return basicUtils.MessageResponse(
+        message='Default 404'
+    ).toJson()
+
+@jwt.expired_token_loader
+def expiredTokenLoaderCallback():
+    return basicUtils.expired_token.toJson()
+
+#####################
+## REFRESH Endpoin ##
+#####################
+@app.route('/refresh', methods=['GET'])
+@JWT.jwt_refresh_token_required
+def refresh():
+    session = JWT.get_jwt_identity()
+    newSession = {
+        'session':JWT.create_access_token(identity=session)
+    }
+    return basicUtils.MessageResponse(
+        message='New session token created',
+        body=newSession
+    ).toJson(), 200
 
 ####################
 ## AUTH Endpoints ##
@@ -41,7 +73,8 @@ def authenticate():
 
         if success:
             session = {
-                'session':JWT.create_access_token(identity={'user_id':user_id})
+                'session':JWT.create_access_token(identity={'user_id':user_id}),
+                'refresh':JWT.create_refresh_token(identity={'user_id':user_id})
             }
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
@@ -66,15 +99,35 @@ def updateCompany():
         body = request.get_json()
 
         if session is not None:
+            # Create company
             company = sqlUtils.postCompany(
                 name=body['name'],
                 admin_id=session['user_id']
             )
 
-            infoUpdate = {'company_id':company['id']}
+            # Create blockchain and file location
+            company['blockchain'] = sqlUtils.postBlockchain(company_id=company['id'])
 
-            updated = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
-            updated['updated_at'] = datetime.now()
+            # Create the directory for the company
+            blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company['id'])
+            blockFile = blockLocation + '/blockchain.json'
+            pathlib.Path(blockLocation).mkdir(parents=False, mode=0o774, exist_ok=True)
+
+            # Write metadata to the file
+            blockchain = open(blockFile, 'w')
+            blockchain.write('{')
+            blockchain.write(
+                '"metadata":{"company_id":%(company_id)s, "admin_id":%(admin_id)s, "created_at":"%(time)s"},'
+                % {'company_id':company['id'], 'admin_id':session['user_id'], 'time':datetime.now()}
+            )
+            blockchain.write('"blocks":[]')
+            blockchain.write('}')
+            blockchain.close()
+
+            # Update user after company is created
+            infoUpdate = {'company_id':company['id']}
+            company['admin'] = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
+            company['admin']['updated_at'] = datetime.now()
 
             return basicUtils.MessageResponse(
                 message='Successfully created new COMPANY',
@@ -161,7 +214,7 @@ def addUserToCompany(company_id):
             return basicUtils.MessageResponse(
                 message='Users added.',
                 body={'users':responses}
-            ).toJson, 200
+            ).toJson(), 200
         else:
             return basicUtils.unauthroized_response.toJson(), 401
     else:
@@ -179,19 +232,32 @@ def addUserToCompany(company_id):
                     user_id=user['id'],
                     username=user['username']
                 )
-                responses.append(addedUser)
+                responses.append(removedUser)
 
             return basicUtils.MessageResponse(
-                message='Users added.',
+                message='Users removed.',
                 body={'users':responses}
-            ).toJson, 200
+            ).toJson(), 200
         else:
             return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>/fullchain', methods=['GET'])
 @JWT.jwt_required
 def getFullchain(company_id):
-    return 'GET-Gets the fullchain'
+    session = JWT.get_jwt_identity()
+
+    if authUtils.userPartOfCompany(session['user_id'], company_id):
+        blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
+
+        try:
+            return send_from_directory(directory=blockLocation, filename='blockchain.json'), 200
+        except NotFound as exc:
+            return basicUtils.notFoundResponse(
+                object='Company',
+                value=company_id
+            ).toJson(), 404
+    else:
+        return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>/post', methods=['POST'])
 @JWT.jwt_required
@@ -206,7 +272,28 @@ def getUpdatedBlockchain(company_id):
 @app.route('/company/<int:company_id>/verify', methods=['GET'])
 @JWT.jwt_required
 def verifyBlockchain(company_id):
-    return 'GET-Verify blockchain for company'
+    session = JST.get_jwt_identity()
+    body = request.get_json()
+
+    if session is not None:
+        if authUtils.userPartOfCompany(session['user_id'], company_id):
+            currentHash = sqlUtils.getBlockchainHash(company_id)
+            if body['current_hash'] == currentHash:
+                return basicUtils.MessageResponse(
+                    message='Current hash matches the serverside hash'
+                ).toJson, 200
+            else:
+                return basicUtils.MessageResponse(
+                    message='Your current hash does not match the server\'s hash',
+                    body={
+                        'client_hash':body['current_hash'],
+                        'server_hash':currentHash
+                    }
+                )
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
+    else:
+        return basicUtils.unauthroized_response.toJson(), 401
 
 
 #####################
