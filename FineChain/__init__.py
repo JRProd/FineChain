@@ -11,6 +11,7 @@ from flask import (
 )
 from werkzeug.exceptions import NotFound
 import flask_jwt_extended as JWT
+import pickle
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
@@ -19,8 +20,9 @@ app.config['COMPANY_LOCATION'] = 'files/'
 jwt = JWT.JWTManager(app)
 
 
-from ServerUtils import authUtils, basicUtils, blockchainUtils, sqlUtils
-blockchainUtils.initBuffer(root_path=app.root_path, company_location=app.config['COMPANY_LOCATION'])
+from ServerUtils import authUtils, basicUtils, sqlUtils
+import Blockchain
+BlockchainBuffer.initBuffer(root_path=app.root_path, company_location=app.config['COMPANY_LOCATION'])
 
 ####################
 ## TEST Endpoints ##
@@ -107,22 +109,13 @@ def updateCompany():
 
             # Create blockchain and file location
             company['blockchain'] = sqlUtils.postBlockchain(company_id=company['id'])
-
+            companyBlockchain = Blockchain(id=company['blockcahin']['id'], company_id=company['id'])
             # Create the directory for the company
             blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company['id'])
-            blockFile = blockLocation + '/blockchain.json'
             pathlib.Path(blockLocation).mkdir(parents=False, mode=0o774, exist_ok=True)
+            blockFile = open(blockLocation + '/blockchain.pkl')
 
-            # Write metadata to the file
-            blockchain = open(blockFile, 'w')
-            blockchain.write('{')
-            blockchain.write(
-                '"metadata":{"company_id":%(company_id)s, "admin_id":%(admin_id)s, "created_at":"%(time)s"},'
-                % {'company_id':company['id'], 'admin_id':session['user_id'], 'time':datetime.now()}
-            )
-            blockchain.write('"blocks":[]')
-            blockchain.write('}')
-            blockchain.close()
+            pickle.dump(companyBlockchain, blockFile)
 
             # Update user after company is created
             infoUpdate = {'company_id':company['id']}

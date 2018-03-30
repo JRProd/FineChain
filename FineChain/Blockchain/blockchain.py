@@ -7,17 +7,14 @@ import requests
 from flask import Flask, jsonify, request
 
 class Blockchain:
-	def __init__(self):
+	def __init__(self, id, company_id):
 		self.chain = []
 		self.current_transactions = []
 		self.append_block(prev_hash='1')
 		self.nodes = set()
 		self.id = None
 		self.company_id = None
-		self.current_hash = None #do i really need this?
-		self.created = None
-		self.updated = None
-		self.deleted = None
+		self.created = time.now()
 
 	def append_block(self, prev_hash):
 		# Create new block and append to blockchain
