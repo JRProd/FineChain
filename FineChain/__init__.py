@@ -21,8 +21,13 @@ jwt = JWT.JWTManager(app)
 
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
-import Blockchain
-BlockchainBuffer.initBuffer(root_path=app.root_path, company_location=app.config['COMPANY_LOCATION'])
+
+import Blockchain, BlockchainBuffer
+from BlockchainBuffer.BlockchainBuffer import BlockchainBuffer
+
+blockchainBuffer = BlockchainBuffer()
+blockchainBuffer.root_path = app.root_path
+blockchainBuffer.company_location = company_loc=app.config['COMPANY_LOCATION']
 
 ####################
 ## TEST Endpoints ##
