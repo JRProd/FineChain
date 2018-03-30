@@ -11,7 +11,8 @@ app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x
 
 jwt = JWT.JWTManager(app)
 
-from ServerUtils import authUtils, basicUtils, sqlUtils
+from ServerUtils import authUtils, basicUtils, blockchainUtils, sqlUtils
+blockchainUtils.initBuffer(root_path=app.root_path, company_location=app.config['COMPANY_LOCATION'])
 
 ####################
 ## TEST Endpoints ##
