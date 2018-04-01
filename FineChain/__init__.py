@@ -261,7 +261,7 @@ def getFullchain(company_id):
 @app.route('/company/<int:company_id>/post', methods=['POST'])
 @JWT.jwt_required
 def postTransaction(company_id):
-    session = JST.get_jwt_identity()
+    session = JWT.get_jwt_identity()
     body = request.get_json()
 
     if session is not None:
@@ -288,7 +288,7 @@ def getUpdatedBlockchain(company_id):
 @app.route('/company/<int:company_id>/verify', methods=['GET'])
 @JWT.jwt_required
 def verifyBlockchain(company_id):
-    session = JST.get_jwt_identity()
+    session = JWT.get_jwt_identity()
     body = request.get_json()
 
     if session is not None:
