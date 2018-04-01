@@ -268,7 +268,7 @@ def postTransaction(company_id):
         if authUtils.userPartOfCompany(session['user_id'], company_id):
             transaction = {
                 'to':body['to'],
-                'from':body['from'],
+                'recipient':body['recipient'],
                 'amount':body['amount']
             }
             blockchainBuffer.addTransaction(company_id=company_id, transaction=transaction)
