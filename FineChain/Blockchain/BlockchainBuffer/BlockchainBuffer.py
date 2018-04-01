@@ -77,4 +77,4 @@ class BufferBlock():
 
     def save(self, path):
         print('save', file=sys.stderr)
-        pickle.dump(self.blockchain, path)
+        pickle.dump(self.blockchain, open(path, 'wb'))
