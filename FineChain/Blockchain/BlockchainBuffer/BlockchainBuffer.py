@@ -51,7 +51,6 @@ class BlockchainBuffer():
                 self.nextOpne = 0
 
     def saveBlockchain(self, company_id):
-        blockLocation
         location = self.isCompanyInBuffer(company_id)
         if location != -1:
             self.buffer[location].save(self.blockLocation + str(company_id) + '/blockchain.pkl')
