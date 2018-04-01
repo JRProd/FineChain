@@ -13,7 +13,7 @@ class Blockchain:
 		self.append_block(prev_hash='1')
 		self.nodes = set()
 		self.id = id
-		self.company_id = compnay_id
+		self.company_id = company_id
 		self.created = time.now()
 
 	def append_block(self, prev_hash):
