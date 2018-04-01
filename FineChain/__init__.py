@@ -276,7 +276,7 @@ def postTransaction(company_id):
             return basicUtils.MessageResponse(
                 message='Transaction added',
                 body=transaction
-            )
+            ).toJson()
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
