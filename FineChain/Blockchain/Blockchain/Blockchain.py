@@ -31,7 +31,7 @@ class Blockchain:
 		self.chain.append(block)
 		return block
 
-	def append_transaction(self, amount, to, from):
+	def append_transaction(self, amount, to, recipient):
 		# Create new transaction and put into current block
 		# param amount: amount of money being exchanged
 		# param to: who money is being sent from
@@ -44,7 +44,7 @@ class Blockchain:
 		transaction = {
 			'amount': amount,
 			'to': to,
-			'from': from,
+			'recipient': recipient,
 			'timestamp': str(time.now())
 
 		}
