@@ -6,7 +6,7 @@ class BlockchainBuffer():
     def __init__(self, root_loc, company_loc, size=size):
         self.size = size
         self.root_path = root_loc
-        self.compnay_location = company_loc
+        self.company_location = company_loc
         self.nextOpen = 0
         self.buffer = [None]*16
 
