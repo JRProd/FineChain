@@ -31,11 +31,11 @@ class Blockchain:
 		self.chain.append(block)
 		return block
 
-	def append_transaction(self, amount, sender, recipient):
+	def append_transaction(self, amount, to, from):
 		# Create new transaction and put into current block
 		# param amount: amount of money being exchanged
-		# param sender: who money is being sent from
-		# param recipient: who money is being sent to
+		# param to: who money is being sent from
+		# param from: who money is being sent to
 		# return: the previous block's location incremented
 		#print(self.prev_block()['prev_hash'])
 		if len(self.current_transactions) == 100:
@@ -43,8 +43,8 @@ class Blockchain:
 
 		transaction = {
 			'amount': amount,
-			'sender': sender,
-			'recipient': recipient,
+			'to': to,
+			'from': from,
 			'timestamp': str(time.now())
 
 		}
@@ -122,5 +122,3 @@ class Blockchain:
 
 	def get_id(self):
 		return self.id
-
-

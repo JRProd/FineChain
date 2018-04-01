@@ -63,8 +63,8 @@ class BufferBlock():
     def addTransaction(self, transaction):
         self.blockchain.append_transaction(
             amount=transaction['amount'],
-            sender=transaction['sender'],
-            recipient=transaction['recipient']
+            to=transaction['to'],
+            from=transaction['from']
         )
         self.setFresh(True)
 
