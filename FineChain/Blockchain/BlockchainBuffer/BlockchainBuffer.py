@@ -7,8 +7,7 @@ size = 16
 class BlockchainBuffer():
     def __init__(self, root_loc, company_loc, size=size):
         self.size = size
-        self.root_path = root_loc
-        self.company_location = company_loc
+        self.blockLocation = os.path.join(root_loc, company_loc)
         self.nextOpen = 0
         self.buffer = [None]*16
 
@@ -31,8 +30,7 @@ class BlockchainBuffer():
         return -1
 
     def addBlockchainToBuffer(self, company_id):
-        blockLocation = os.path.join(self.root_path, self.company_location)
-        blockchain = pickle.load(open(blockLocation + str(company_id) + '/blockchain.pkl', 'rb'))
+        blockchain = pickle.load(open(self.blockLocation + str(company_id) + '/blockchain.pkl', 'rb'))
 
         added = False
         while not added:
@@ -41,7 +39,7 @@ class BlockchainBuffer():
                 self.buffer[self.nextOpen] = BufferBlock(blockchain)
                 added = True
             elif not nextBlock.isFresh():
-                oldBlockchainLoc = blockLocation + str(nextBlock.blockchain.company_id) + '/blockchain.pkl'
+                oldBlockchainLoc = self.blockLocation + str(nextBlock.blockchain.company_id) + '/blockchain.pkl'
                 nextBlock.save(oldBlockchainLoc)
                 self.buffer[self.nextOpen] = BufferBlock(blockchain)
                 added = True
@@ -53,11 +51,10 @@ class BlockchainBuffer():
                 self.nextOpne = 0
 
     def saveBlockchain(self, company_id):
-        print('saveBlockchain', file=sys.stderr)
+        blockLocation
         location = self.isCompanyInBuffer(company_id)
-        print('Saving blockchain in location', location, file=sys.stderr)
         if location != -1:
-            self.buffer[location].save()
+            self.buffer[location].save(self.blockLocation + str(company_id) + '/blockchain.pkl')
 
 
 class BufferBlock():
