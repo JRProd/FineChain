@@ -55,7 +55,7 @@ class BlockchainBuffer():
     def saveBlockchain(self, company_id):
         print('saveBlockchain', file=sys.stderr)
         location = self.isCompanyInBuffer(company_id)
-        print('\tSaving blockchain in location', location, file=sys.stderr)
+        print('Saving blockchain in location', location, file=sys.stderr)
         if location != -1:
             self.buffer[location].save()
 

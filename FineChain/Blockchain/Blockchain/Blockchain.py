@@ -12,8 +12,8 @@ class Blockchain:
 		self.current_transactions = []
 		self.append_block(prev_hash='1')
 		self.nodes = set()
-		self.id = None
-		self.company_id = None
+		self.id = id
+		self.company_id = compnay_id
 		self.created = time.now()
 
 	def append_block(self, prev_hash):
