@@ -49,6 +49,12 @@ class BlockchainBuffer():
             if self.nextOpen >= 16:
                 self.nextOpne = 0
 
+    def saveBlockchain(self, company_id):
+        location = self.isCompanyInBuffer(company_id)
+        if location:
+            self.buffer[location].save()
+
+
 class BufferBlock():
     def __init__(self, blockchain):
         self.blockchain = blockchain

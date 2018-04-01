@@ -245,6 +245,7 @@ def getFullchain(company_id):
     session = JWT.get_jwt_identity()
 
     if authUtils.userPartOfCompany(session['user_id'], company_id):
+        blockchainBuffer.saveBlockchain(company_id)
         blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
 
         try:
@@ -260,7 +261,24 @@ def getFullchain(company_id):
 @app.route('/company/<int:company_id>/post', methods=['POST'])
 @JWT.jwt_required
 def postTransaction(company_id):
-    return 'POST-Add a transaction to a company'
+    session = JST.get_jwt_identity()
+    body = request.get_json()
+
+    if session is not None:
+        if authUtils.userPartOfCompany(session['user_id'], company_id):
+            transaction = {
+                'to':body['to'],
+                'from':body['from'],
+                'amount':body['amount']
+            }
+            blockchainBuffer.addTransaction(company_id=company_id, transaction=transaction)
+
+            return basicUtils.MessageResponse(
+                message='Transaction added',
+                body=transaction
+            )
+    else:
+        return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>/update', methods=['GET'])
 @JWT.jwt_required
