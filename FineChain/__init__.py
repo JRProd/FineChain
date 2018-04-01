@@ -258,9 +258,11 @@ def getFullchain(company_id):
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
+import sys
 @app.route('/company/<int:company_id>/post', methods=['POST'])
 @JWT.jwt_required
 def postTransaction(company_id):
+    print('postTransaction', file=sys.stderr)
     session = JWT.get_jwt_identity()
     body = request.get_json()
 
@@ -271,12 +273,13 @@ def postTransaction(company_id):
                 'recipient':body['recipient'],
                 'amount':body['amount']
             }
+            print('Adding Transaction', file=sys.stderr)
             blockchainBuffer.addTransaction(company_id=company_id, transaction=transaction)
 
             return basicUtils.MessageResponse(
                 message='Transaction added',
                 body=transaction
-            ).toJson()
+            ).toJson(), 200
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
