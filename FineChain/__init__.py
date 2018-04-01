@@ -249,7 +249,7 @@ def getFullchain(company_id):
         blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
 
         try:
-            return send_from_directory(directory=blockLocation, filename='blockchain.json'), 200
+            return send_from_directory(directory=blockLocation, filename='blockchain.pkl'), 200
         except NotFound as exc:
             return basicUtils.notFoundResponse(
                 object='Company',
