@@ -49,9 +49,6 @@ class Blockchain:
 
 		}
 		self.current_transactions.append(transaction)
-
-
-
 		return self.prev_block()['index'] + 1
 
 	def prev_block(self):

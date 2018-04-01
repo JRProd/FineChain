@@ -1,6 +1,8 @@
 import os, json
 import pickle
 
+import sys
+
 size = 16
 class BlockchainBuffer():
     def __init__(self, root_loc, company_loc, size=size):
@@ -11,6 +13,7 @@ class BlockchainBuffer():
         self.buffer = [None]*16
 
     def addTransaction(self, company_id, transaction=None):
+        print('addTransaction\n', file=sys.err)
         location = self.isCompanyInBuffer(company_id)
         if location:
             self.buffer[location].addTransaction(transaction)
@@ -50,6 +53,7 @@ class BlockchainBuffer():
                 self.nextOpne = 0
 
     def saveBlockchain(self, company_id):
+        print('saveBlockchain\n', file=sys.err)
         location = self.isCompanyInBuffer(company_id)
         if location:
             self.buffer[location].save()
@@ -75,4 +79,5 @@ class BufferBlock():
         self.fresh = fresh
 
     def save(self, path):
-        pickle.dump(self.blockchain, paht)
+        print('save\n', file=sys.err)
+        pickle.dump(self.blockchain, path)
