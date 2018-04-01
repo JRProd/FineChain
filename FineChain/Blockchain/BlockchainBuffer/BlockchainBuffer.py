@@ -23,7 +23,7 @@ class BlockchainBuffer():
 
     def isCompanyInBuffer(self, company_id):
         for i in range(0, self.size):
-            if self.buffer[i].blockchain.metadata.company_id == company_id:
+            if self.buffer[i] is not None and self.buffer[i].blockchain.metadata.company_id == company_id:
                 return i
         return 0
 
