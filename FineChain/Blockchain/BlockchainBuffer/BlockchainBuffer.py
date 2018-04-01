@@ -13,7 +13,7 @@ class BlockchainBuffer():
         self.buffer = [None]*16
 
     def addTransaction(self, company_id, transaction=None):
-        print('addTransaction\n', file=sys.err)
+        print('addTransaction\n', file=sys.stderr)
         location = self.isCompanyInBuffer(company_id)
         if location:
             self.buffer[location].addTransaction(transaction)
@@ -53,7 +53,7 @@ class BlockchainBuffer():
                 self.nextOpne = 0
 
     def saveBlockchain(self, company_id):
-        print('saveBlockchain\n', file=sys.err)
+        print('saveBlockchain\n', file=sys.stderr)
         location = self.isCompanyInBuffer(company_id)
         if location:
             self.buffer[location].save()
@@ -79,5 +79,5 @@ class BufferBlock():
         self.fresh = fresh
 
     def save(self, path):
-        print('save\n', file=sys.err)
+        print('save\n', file=sys.stderr)
         pickle.dump(self.blockchain, path)
