@@ -287,7 +287,7 @@ def postTransaction(company_id):
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
-@app.route('/company/<int:company_id>/update', methods=['GET'])
+@app.route('/company/<int:company_id>/update', methods=['POST'])
 @JWT.jwt_required
 def getUpdatedBlockchain(company_id):
     session = JWT.get_jwt_identity()
