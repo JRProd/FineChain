@@ -65,7 +65,7 @@ class Blockchain:
         index = -1
         block = self.chain[index]
         # Backwards search for the last prev_hash
-        while prev_hash != block.prev_hash:
+        while prev_hash != block['prev_hash']:
             index -= 1
             block = self.chain[index]
         # The prev_hash represents the last completed block
