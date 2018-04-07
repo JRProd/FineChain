@@ -150,7 +150,7 @@ class Blockchain:
         return False
 
     def verify(self, prev_hash, current_transaction):
-        return prev_hash == self.prev_block()['prev_hash'] and current_transaction+1 == len(self.current_transaction):
+        return prev_hash == self.prev_block()['prev_hash'] and current_transaction+1 == len(self.current_transactions)
 
     def print_chain(self):
         # Displays the chain

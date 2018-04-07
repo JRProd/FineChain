@@ -345,7 +345,7 @@ def verifyBlockchain(company_id):
 
     if session is not None:
         if authUtils.userPartOfCompany(session['user_id'], company_id):
-            if blockchainBuffer.verifyBlockchain(company_id, body['prev_hash'], body['current_transaction'])
+            if blockchainBuffer.verify(company_id, body['prev_hash'], body['current_transaction']):
                 return basicUtils.MessageResponse(
                     message='Current hash matches the serverside hash',
                     body=True

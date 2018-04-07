@@ -68,8 +68,8 @@ class BlockchainBuffer():
 
     def verify(self, company_id, prev_hash, current_transaction):
         location = self.isCompanyInBuffer(company_id)
-        if location != -a:
-            return self.buffer[location].verify(prev_hash, current_transaction):
+        if location != -1:
+            return self.buffer[location].verify(prev_hash, current_transaction)
         else:
             self.addBlockchainToBuffer(company_id)
             addedLocation = self.nextOpen - 1
