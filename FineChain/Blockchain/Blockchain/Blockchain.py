@@ -73,6 +73,8 @@ class Blockchain:
         index += 1 # Get the next incomplete block
 
         if index != 0:
+            # Choose if the only update is for current transactions or other blocks aswell
+            notCurrentTransactions = True
             # Get the incomplete current transaction list of the incomplete block
             transactions.append(self.chain[index].transactions[current_transaction+1:])
             index += 1
@@ -84,7 +86,10 @@ class Blockchain:
 
         # Completes the list with the current transactions right now
         print('Current transactions not in a block', self.current_transactions, file=sys.stderr)
-        transactions.append(self.current_transactions)
+        if notCurrentTransactions:
+            transactions.append(self.current_transactions)
+        else:
+            transactions.append(self.current_transactions[current_transaction+1:])
 
         return transactions
 
