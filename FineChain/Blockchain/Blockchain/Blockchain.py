@@ -72,6 +72,7 @@ class Blockchain:
         # The prev_hash represents the last completed block
         index += 1 # Get the next incomplete block
 
+        notCurrentTransactions = False
         if index != 0:
             # Choose if the only update is for current transactions or other blocks aswell
             notCurrentTransactions = True
