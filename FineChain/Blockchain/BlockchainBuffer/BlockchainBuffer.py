@@ -51,7 +51,7 @@ class BlockchainBuffer():
                 self.nextOpne = 0
 
     def getListOfTransactions(self, company_id, prev_hash, current_transaction):
-        location = isCompanyInBuffer
+        location = self.isCompanyInBuffer()
         if location != -1:
             return self.buffer[location].getListOfTransactions(prev_hash, current_transaction)
         else:
