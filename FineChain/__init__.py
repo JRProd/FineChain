@@ -299,7 +299,7 @@ def getUpdatedBlockchain(company_id):
 
             return basicUtils.MessageResponse(
                 message='Updated Transactions',
-                body=transaction
+                body=transactions
             ).toJson(), 200
         else:
             return basicUtils.unauthroized_response.toJson(), 401
