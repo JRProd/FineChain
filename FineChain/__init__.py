@@ -13,17 +13,23 @@ from werkzeug.exceptions import NotFound
 import flask_jwt_extended as JWT
 import pickle
 
+# Intialize the applicaiton
 app = Flask(__name__)
+
+# Defines SECRET_KEY for JWT and blockchain file location
 app.config['SECRET_KEY'] = b'\x07-\n4K~\xe7\x1e|\xd0\x08\xa7\x95\xf1\xeeV"\x1f\x8f\x0f\x0e\n5YV\xb9\x87=#\x00\xa6b'
 app.config['COMPANY_LOCATION'] = 'files/'
 
+# Intialize the JWT manager
 jwt = JWT.JWTManager(app)
-
 
 from ServerUtils import authUtils, basicUtils, sqlUtils
 
+# Import the blockchain for creating new chains when a company is created
 from Blockchain.Blockchain import Blockchain
+# Import the buffer that controls when files are loaded and deloaded
 from BlockchainBuffer.BlockchainBuffer import BlockchainBuffer
+# Initalze the buffer
 blockchainBuffer = BlockchainBuffer(
     root_loc=app.root_path,
     company_loc=app.config['COMPANY_LOCATION']
@@ -39,12 +45,14 @@ def home():
 def isRunning():
     return 'Yes, the flask app is running!'
 
+# Default 404 response
 @app.errorhandler(404)
 def pageNotFound(err):
     return basicUtils.MessageResponse(
         message='Default 404'
     ).toJson()
 
+# Default JWT resposne
 @jwt.expired_token_loader
 def expiredTokenLoaderCallback():
     return basicUtils.expired_token.toJson()
@@ -55,10 +63,13 @@ def expiredTokenLoaderCallback():
 @app.route('/refresh', methods=['GET'])
 @JWT.jwt_refresh_token_required
 def refresh():
+    # Get current session
     session = JWT.get_jwt_identity()
+    # Create a new session
     newSession = {
         'session':JWT.create_access_token(identity=session)
     }
+    # Return new session
     return basicUtils.MessageResponse(
         message='New session token created',
         body=newSession
@@ -67,27 +78,28 @@ def refresh():
 ####################
 ## AUTH Endpoints ##
 ####################
-@app.route('/auth', methods=['POST', 'DELETE'])
+@app.route('/auth', methods=['POST'])
 @JWT.jwt_optional
 def authenticate():
     if request.method == 'POST':
         body = request.get_json()
 
-        username = body['username']
-        password = body['password']
-
-        success, user_id = authUtils.authenticate(username, password)
+        # Check if challenge is valid
+        success, user_id = authUtils.authenticate(body['username'], body['password'])
 
         if success:
+            # Create a new session
             session = {
                 'session':JWT.create_access_token(identity={'user_id':user_id}),
                 'refresh':JWT.create_refresh_token(identity={'user_id':user_id})
             }
+            # Return new session
             return basicUtils.MessageResponse(
                 message="Successfully loged in",
                 body=session
             ).toJson(), 200
         else:
+            # Invlaid login resposne
             return basicUtils.MessageResponse(
                 message='Invalid username or password'
             ).toJson(), 401
@@ -139,24 +151,26 @@ def updateCompany():
 
         if session is not None:
             user = sqlUtils.getUserWithId(session['user_id'])
-            # Get all the possible changes that were submitted in the body
 
+            # Get all the possible changes that were submitted in the body
             if user['company_id'] is None:
                 return basicUtils.notFoundResponse(
                     object='Company associated with this users',
                     value=user['id']
                 ).toJson(), 404
-
             changes = ['name', 'user_ids']
+            # Build updated info
             infoUpdate = {}
             for change in changes:
                 if change in body:
                     infoUpdate[change] = body[change]
 
+            # Update the info
             updated = sqlUtils.updateCompanyInfo(company_id=user['company_id'], data=infoUpdate)
             updated['updated_at'] = datetime.now()
 
             updateAdmin = False
+            # Specifically check if admin is being updated
             if 'admin' in body:
                 admim = sqlUtils.updateCompanyAdmin(
                     company_id=user['company_id'],
@@ -201,13 +215,19 @@ def addUserToCompany(company_id):
 
             users = body['users']
             responses = []
+            # Add users to the company
             for user in users:
-                addedUser = sqlUtils.addUserToCompany(
+                # Determine if successful
+                success, addedUser = sqlUtils.addUserToCompany(
                     company_id=admin['company_id'],
                     user_id=user['id'],
                     username=user['username']
                 )
-                responses.append(addedUser)
+                # Different values added based on success
+                if success:
+                    responses.append(addedUser)
+                else:
+                    responses.append({'user_id':user['id'], 'Failed':addedUser})
 
             return basicUtils.MessageResponse(
                 message='Users added.',
@@ -224,13 +244,18 @@ def addUserToCompany(company_id):
 
             users = body['users']
             responses = []
+            # Remove users from company
             for user in users:
-                removedUser = sqlUtils.removeUserFromCompany(
+                success, removedUser = sqlUtils.removeUserFromCompany(
                     company_id=admin['company_id'],
                     user_id=user['id'],
                     username=user['username']
                 )
-                responses.append(removedUser)
+                # Differemt values added based on success
+                if success:
+                    responses.append(removedUser)
+                else:
+                    responses.append({'user_id':user['id'], 'Failed':removedUser})
 
             return basicUtils.MessageResponse(
                 message='Users removed.',
@@ -246,12 +271,15 @@ def getFullchain(company_id):
 
     if session is not None:
         if authUtils.userPartOfCompany(session['user_id'], company_id):
+            # Saves the changes to a file
             blockchainBuffer.saveBlockchain(company_id)
             blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
 
             try:
+                # Tries to provide the file
                 return send_from_directory(directory=blockLocation, filename='blockchain.pkl'), 200
             except NotFound as exc:
+                # Not found response
                 return basicUtils.notFoundResponse(
                     object='Company',
                     value=company_id
@@ -271,6 +299,7 @@ def postTransaction(company_id):
 
     if session is not None:
         if authUtils.userPartOfCompany(session['user_id'], company_id):
+            # Adds transaction to the blockchain
             transaction = {
                 'to':body['to'],
                 'recipient':body['recipient'],
@@ -295,8 +324,10 @@ def getUpdatedBlockchain(company_id):
 
     if session is not None:
         if authUtils.userPartOfCompany(session['user_id'], company_id):
+            # Gets the updated list of transactions
             transactions = blockchainBuffer.getListOfTransactions(company_id, body['prev_hash'], body['current_transaction'])
 
+            # Returns them as a list with 0 being oldest and n being newest
             return basicUtils.MessageResponse(
                 message='Updated Transactions',
                 body=transactions
@@ -306,7 +337,7 @@ def getUpdatedBlockchain(company_id):
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
-@app.route('/company/<int:company_id>/verify', methods=['GET'])
+@app.route('/company/<int:company_id>/verify', methods=['POST'])
 @JWT.jwt_required
 def verifyBlockchain(company_id):
     session = JWT.get_jwt_identity()
@@ -314,18 +345,15 @@ def verifyBlockchain(company_id):
 
     if session is not None:
         if authUtils.userPartOfCompany(session['user_id'], company_id):
-            currentHash = sqlUtils.getBlockchainHash(company_id)
-            if body['current_hash'] == currentHash:
+            if blockchainBuffer.verifyBlockchain(company_id, body['prev_hash'], body['current_transaction'])
                 return basicUtils.MessageResponse(
-                    message='Current hash matches the serverside hash'
+                    message='Current hash matches the serverside hash',
+                    body=True
                 ).toJson, 200
             else:
                 return basicUtils.MessageResponse(
                     message='Your current hash does not match the server\'s hash',
-                    body={
-                        'client_hash':body['current_hash'],
-                        'server_hash':currentHash
-                    }
+                    body=False
                 )
         else:
             return basicUtils.unauthroized_response.toJson(), 401

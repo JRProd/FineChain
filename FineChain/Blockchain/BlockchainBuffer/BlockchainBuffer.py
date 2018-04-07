@@ -11,6 +11,11 @@ class BlockchainBuffer():
         self.nextOpen = 0
         self.buffer = [None]*16
 
+    def __del__(self):
+        for block in self.buffer:
+            if block is not None:
+                block.saveBlockchain(block.blockchain['company_id'])
+
     def addTransaction(self, company_id, transaction=None):
         print('addTransaction', file=sys.stderr)
         location = self.isCompanyInBuffer(company_id)
@@ -59,7 +64,18 @@ class BlockchainBuffer():
             addedLocation = self.nextOpen - 1
             if addedLocation < 0:
                  addedLocation = 15
-            self.buffer[addedLocation].getListOfTransactions(prev_hash, current_transaction)
+            return self.buffer[addedLocation].getListOfTransactions(prev_hash, current_transaction)
+
+    def verify(self, company_id, prev_hash, current_transaction):
+        location = self.isCompanyInBuffer(company_id)
+        if location != -a:
+            return self.buffer[location].verify(prev_hash, current_transaction):
+        else:
+            self.addBlockchainToBuffer(company_id)
+            addedLocation = self.nextOpen - 1
+            if addedLocation < 0:
+                 addedLocation = 15
+            return self.buffer[addedLocation].verify(prev_hash, current_transaction)
 
     def saveBlockchain(self, company_id):
         location = self.isCompanyInBuffer(company_id)
@@ -81,9 +97,10 @@ class BufferBlock():
         self.setFresh(True)
 
     def getListOfTransactions(self, prev_hash, current_transaction):
-        print('getListOfTransactions:', prev_hash, current_transaction, file=sys.stderr)
-        self.setFresh(True)
         return self.blockchain.get_list_of_transactions(prev_hash, current_transaction)
+
+    def verify(self, prev_hash, current_transaction):
+        return self.blockchain.verify(prev_hash, current_transaction)
 
     def isFresh(self):
         return self.fresh

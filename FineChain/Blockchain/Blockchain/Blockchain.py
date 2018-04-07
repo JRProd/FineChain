@@ -93,7 +93,7 @@ class Blockchain:
         else:
             transactions.append(self.current_transactions[current_transaction+1:])
 
-        # Flattens the list into one list of ordered transactions 
+        # Flattens the list into one list of ordered transactions
         return [item for sublist in transactions for item in sublist]
 
 
@@ -148,6 +148,9 @@ class Blockchain:
             self.chain = newchain
             return True
         return False
+
+    def verify(self, prev_hash, current_transaction):
+        return prev_hash == self.prev_block()['prev_hash'] and current_transaction+1 == len(self.current_transaction):
 
     def print_chain(self):
         # Displays the chain
