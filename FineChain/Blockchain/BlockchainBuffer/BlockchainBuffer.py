@@ -50,7 +50,7 @@ class BlockchainBuffer():
             if self.nextOpen >= 16:
                 self.nextOpne = 0
 
-    def blockchainUpdate(self, company_id, prev_hash, current_transaction):
+    def getListOfTransactions(self, company_id, prev_hash, current_transaction):
         location = isCompanyInBuffer
         if location != -1:
             return self.buffer[location].getListOfTransactions(prev_hash, current_transaction)
