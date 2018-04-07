@@ -6,6 +6,8 @@ import urllib
 #import requests
 from flask import Flask, jsonify, request
 
+TRANSACTIONS_PER_BLOCK = 10
+
 class Blockchain:
 	def __init__(self, id, company_id):
 		self.chain = []
@@ -38,7 +40,7 @@ class Blockchain:
 		# param from: who money is being sent to
 		# return: the previous block's location incremented
 		#print(self.prev_block()['prev_hash'])
-		if len(self.current_transactions) == 100:
+		if len(self.current_transactions) == TRANSACTIONS_PER_BLOCK:
 			self.append_block(self.hash(self.prev_block())) #setting a limit of 100 transactions per block
 
 		transaction = {
@@ -55,6 +57,33 @@ class Blockchain:
 		# Return the previous block
 		# return: previous block
 		return self.chain[-1]
+
+    def get_list_of_transactions(self, prev_hash, current_transaction):
+        transactions = []
+
+        # Get the last completed block
+        index = -1
+        block = self.chain[index]
+        # Backwards search for the last prev_hash
+        while prev_hash != block.prev_hash:
+            index -= 1
+            block = self.chain[index]
+        # The prev_hash represents the last completed block
+        index += 1 # Get the next incomplete block
+
+        if index != 0:
+            # Get the incomplete current transaction list of the incomplete block
+            transactions.append(self.chain[index].transactions[current_transaction+1:])
+            index += 1
+        # If there are more blocks, can now add the whole transaction list
+        while index < 0:
+            transactions.append(self.chain[index].transactions)
+
+        # Completes the list with the current transactions right now
+        transactions.append(self.current_transactions)
+
+        return transactions
+
 
 	def hash(self,block):
 		# Create hash of block
