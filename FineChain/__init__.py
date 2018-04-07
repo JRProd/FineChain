@@ -244,17 +244,20 @@ def addUserToCompany(company_id):
 def getFullchain(company_id):
     session = JWT.get_jwt_identity()
 
-    if authUtils.userPartOfCompany(session['user_id'], company_id):
-        blockchainBuffer.saveBlockchain(company_id)
-        blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
+    if session is not None:
+        if authUtils.userPartOfCompany(session['user_id'], company_id):
+            blockchainBuffer.saveBlockchain(company_id)
+            blockLocation = os.path.join(app.root_path, app.config['COMPANY_LOCATION']) + str(company_id)
 
-        try:
-            return send_from_directory(directory=blockLocation, filename='blockchain.pkl'), 200
-        except NotFound as exc:
-            return basicUtils.notFoundResponse(
-                object='Company',
-                value=company_id
-            ).toJson(), 404
+            try:
+                return send_from_directory(directory=blockLocation, filename='blockchain.pkl'), 200
+            except NotFound as exc:
+                return basicUtils.notFoundResponse(
+                    object='Company',
+                    value=company_id
+                ).toJson(), 404
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
@@ -273,20 +276,30 @@ def postTransaction(company_id):
                 'recipient':body['recipient'],
                 'amount':body['amount']
             }
-            print('Adding Transaction', file=sys.stderr)
             blockchainBuffer.addTransaction(company_id=company_id, transaction=transaction)
 
             return basicUtils.MessageResponse(
                 message='Transaction added',
                 body=transaction
             ).toJson(), 200
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
     else:
         return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>/update', methods=['GET'])
 @JWT.jwt_required
 def getUpdatedBlockchain(company_id):
-    return 'GET-Gets the updates from the blockchain'
+    session = JWT.get_jwt_identity()
+    body = request.get_json()
+
+    if session is not None:
+        if authUtils.userPartOfCompany(session['user_id'], company_id):
+            transactions = blockchainBuffer.getListOfTransactions(body['prev_hash'], body['current_transaction'])
+        else:
+            return basicUtils.unauthroized_response.toJson(), 401
+    else:
+        return basicUtils.unauthroized_response.toJson(), 401
 
 @app.route('/company/<int:company_id>/verify', methods=['GET'])
 @JWT.jwt_required

@@ -50,6 +50,17 @@ class BlockchainBuffer():
             if self.nextOpen >= 16:
                 self.nextOpne = 0
 
+    def blockchainUpdate(self, company_id, prev_hash, current_transaction):
+        location = isCompanyInBuffer
+        if location != -1:
+            return self.buffer[location].getListOfTransactions(prev_hash, current_transaction)
+        else:
+            self.addBlockchainToBuffer(company_id)
+            addedLocation = self.nextOpen - 1
+            if addedLocation < 0:
+                 addedLocation = 15
+            self.buffer[addedLocation].getListOfTransactions(prev_hash, current_transaction)
+
     def saveBlockchain(self, company_id):
         location = self.isCompanyInBuffer(company_id)
         if location != -1:
@@ -68,6 +79,10 @@ class BufferBlock():
             recipient=transaction['recipient']
         )
         self.setFresh(True)
+
+    def getListOfTransactions(self, prev_hash, current_transaction):
+        self.setFresh(True)
+        return self.blockchain.get_list_of_transactions(prev_hash, current_transaction)
 
     def isFresh(self):
         return self.fresh
