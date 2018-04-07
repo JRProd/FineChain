@@ -295,7 +295,7 @@ def getUpdatedBlockchain(company_id):
 
     if session is not None:
         if authUtils.userPartOfCompany(session['user_id'], company_id):
-            transactions = blockchainBuffer.getListOfTransactions(body['prev_hash'], body['current_transaction'])
+            transactions = blockchainBuffer.getListOfTransactions(company_id, body['prev_hash'], body['current_transaction'])
         else:
             return basicUtils.unauthroized_response.toJson(), 401
     else:
