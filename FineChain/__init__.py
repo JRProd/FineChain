@@ -349,12 +349,12 @@ def verifyBlockchain(company_id):
                 return basicUtils.MessageResponse(
                     message='Current hash matches the serverside hash',
                     body=True
-                ).toJson, 200
+                ).toJson(), 200
             else:
                 return basicUtils.MessageResponse(
                     message='Your current hash does not match the server\'s hash',
                     body=False
-                )
+                ).toJson(), 200
         else:
             return basicUtils.unauthroized_response.toJson(), 401
     else:
