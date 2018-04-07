@@ -93,7 +93,8 @@ class Blockchain:
         else:
             transactions.append(self.current_transactions[current_transaction+1:])
 
-        return transactions
+        # Flattens the list into one list of ordered transactions 
+        return [item for sublist in transactions for item in sublist]
 
 
     def hash(self,block):
