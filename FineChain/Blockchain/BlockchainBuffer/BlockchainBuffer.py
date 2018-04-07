@@ -81,6 +81,7 @@ class BufferBlock():
         self.setFresh(True)
 
     def getListOfTransactions(self, prev_hash, current_transaction):
+        print('getListOfTransactions:', prev_hash, current_transaction, file=sys.stderr)
         self.setFresh(True)
         return self.blockchain.get_list_of_transactions(prev_hash, current_transaction)
 
