@@ -6,4 +6,5 @@ setup(name='Blockchain',
       author='Jake Rowland',
       author_email='jwrowland@smu.edu',
       url='https://github.com/lazysp333/FineChain/',
-     )
+      packages=['Blockchain', 'BlockchainBuffer']
+)
