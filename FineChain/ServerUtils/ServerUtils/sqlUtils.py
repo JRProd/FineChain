@@ -150,11 +150,9 @@ def updateComapnyAdmin(company_id, user_id, username):
 def addUserToCompany(company_id, user_id, username):
     user = getUserWithId(user_id)
     if user['username'] != username:
-        # TODO Usernames must match
-        pass
+        return False, 'ID and username must match'
     if user['company_id'] is not None:
-        # TODO User must not be part of any other company
-        pass
+        return False, 'Part of another Company'
 
     updateUserInfo(user_id, {'company_id':company_id})
     returnVal = {
@@ -165,16 +163,14 @@ def addUserToCompany(company_id, user_id, username):
         'message':'User added.'
     }
 
-    return returnVal
+    return True, returnVal
 
 def removeUserFromCompany(company_id, user_id, username):
     user = getUserWithId(user_id)
     if user['username'] != username:
-        # TODO Usernames must match
-        pass
+        return False, 'ID and username must match'
     if user['company_id'] != company_id:
-        # TODO User must be part of any other company
-        pass
+        return False, 'User must be part of this Company'
 
     updateUserInfo(user_id, {'company_id':None})
     returnVal = {
@@ -185,7 +181,7 @@ def removeUserFromCompany(company_id, user_id, username):
         'message':'User removed.'
     }
 
-    return returnVal
+    return True, returnVal
 
 def getBlockchainHash(company_id):
     cursor = connection.cursor()
