@@ -6,8 +6,11 @@ from time import sleep
 SERVER = 'http://159.89.159.158'
 AUTH = '/auth'
 COMPANY = '/company'
+COMPANY_ID = '/company/%i'
+FULLCHAIN = '/fullchain'
 REFRESH = '/refresh'
 USER = '/user'
+USER_ID= '/user/%i'
 
 def login(username, password):
     body = {
@@ -19,11 +22,9 @@ def login(username, password):
 
 
 def refresh(session):
-    print("REFRESSING")
-    Observable.create(lambda observer:
-        rxRequest(observer, 'get', SERVER+REFRESH, session=session, refresh=True)
-    ).subscribe(
-        on_next=lambda response:session.updateSession(response['body']['session'])
+    print("REFRESHING")
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'get', SERVER+REFRESH, session=session, refresh_token=True)
     )
 
 
@@ -48,12 +49,14 @@ def removeUsersFromCompnay():
     pass
 
 
-def getCompany():
-    pass
+def getCompany(company_id):
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'get', SERVER+COMPANY_ID % company_id))
 
 
-def getCompanyFullchain():
-    pass
+def getCompanyFullchain(compnay_id, session):
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'get', SERVER+(COMPANY_ID% compnay_id)+FULLCHAIN, session=session))
 
 
 def addTransaction():
@@ -82,43 +85,45 @@ def updateUser():
     pass
 
 
-def getUser():
-    pass
+def getUser(user_id):
+    return Observable.create(lambda observer: rxRequest(observer, 'get', SERVER+USER_ID % user_id))
 
-def rxRequest(observer, method, url, session=None, refresh=False, **kwargs):
-    headers = {}
-    if session is not None:
-        token = 'Bearer '
-        if refresh == True:
-            token += session['refresh']
-        else:
-            token += session['session']
-        headers['Authorization'] = token
-    response = requests.request(method, url, headers=headers, **kwargs)
+from pprint import pprint
+
+def rxRequest(observer, method, url, session=None, refresh_token=False, **kwargs):
+    def generateHeaders():
+        headers = {}
+        if session is not None:
+            token = 'Bearer '
+            if refresh_token == True:
+                token += session.refresh_token
+            else:
+                token += session.session_token
+            headers['Authorization'] = token
+        return headers
+    
+    print("REQUEST SENT")
+    response = requests.request(method, url, headers=generateHeaders(), **kwargs)
+
+    def observerCallback(r):
+        try:
+            json = r.json()
+            observer.on_next(json)
+        except ValueError as e:
+            observer.on_next(r)
+        observer.on_completed()
 
     # Unauthorized access
     if response.status_code == 401:
         print('UNAUTHORIZED ACCESS')
         if session is not None:
-            refresh(session)
-            sleep(0.2)
-            for i in range(1,3):
-                print("SLEEPING")
-                response = requests.request(method, url, headers=headers, **kwargs)
-                if response.status_code == 401:
-                    print("STILL SLEEPING")
-                    sleep(0.1*i)
-                else:
-                    print("WORKED")
-                    break
+            refresh(session).subscribe(
+                on_next=lambda response:session.updateSession(response['body']['session']),
+                on_completed=lambda: observerCallback(requests.request(method, url, headers=generateHeaders(), **kwargs))
+            )
+
     # Resource Not Found
     elif response.status_code == 404:
-        pass
+        observerCallback(response)
     else:
-        try:
-            json = response.json()
-            observer.on_next(json)
-        except ValueError as e:
-            print("ERROR in JSON")
-            print(response)
-            print(e)
+        observerCallback(response)
