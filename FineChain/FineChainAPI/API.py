@@ -1,16 +1,17 @@
 from rx import Observable
 import requests
 
-from time import sleep
-
-SERVER = 'http://159.89.159.158'
-AUTH = '/auth'
-COMPANY = '/company'
+SERVER =     'http://159.89.159.158'
+AUTH =       '/auth'
+COMPANY =    '/company'
 COMPANY_ID = '/company/%i'
-FULLCHAIN = '/fullchain'
-REFRESH = '/refresh'
-USER = '/user'
-USER_ID= '/user/%i'
+FULLCHAIN =  '/fullchain'
+POST =       '/post'
+UPDATE =     '/update'
+VERIFY =     '/verify'
+REFRESH =    '/refresh'
+USER =       '/user'
+USER_ID=     '/user/%i'
 
 def login(username, password):
     body = {
@@ -18,11 +19,11 @@ def login(username, password):
         'password':password
     }
     return Observable.create(lambda  observer:
-        rxRequest(observer, 'post', SERVER+AUTH, json=body))
+        rxRequest(observer, 'post', SERVER+AUTH, json=body)
+    )
 
 
 def refresh(session):
-    print("REFRESHING")
     return Observable.create(lambda observer:
         rxRequest(observer, 'get', SERVER+REFRESH, session=session, refresh_token=True)
     )
@@ -37,38 +38,100 @@ def createCompany(name, session=None):
     )
 
 
-def updateCompany():
-    pass
+def updateCompany(name, admin=None, session=None):
+    body = {
+        'name':name
+    }
+    if admin is not None:
+        body['admin'] = admin
+
+    return Observable.create(lambda  observer:
+        rxRequest(observer, 'put', SERVER+COMPANY, session=session, json=body)
+    )
 
 
-def addUsersToCompany():
-    pass
+def addUsersToCompany(company_id, users, session=None):
+    for user in users:
+        if type(user) is not tuple:
+            raise ValueError('The list must contain all tuples')
+        if len(user) != 2:
+            raise ValueError('Each tuple can only contain two entries')
+
+    users_to_add = {'users':[]}
+    for id, username in users:
+        users_to_add['users'].append({
+            'id':id,
+            'username':username
+        })
+
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'put', SERVER+(COMPANY_ID % company_id)+USER, session=session, json=users_to_add)
+    )
 
 
-def removeUsersFromCompnay():
-    pass
+def removeUsersFromCompany(company_id, users, session=None):
+    for user in users:
+        if type(user) is not tuple:
+            raise ValueError('The list must contain all tuples')
+        if len(user) != 2:
+            raise ValueError('Each tuple can only contain two entries')
+
+    users_to_remove = {'users':[]}
+    for id, username in users:
+        users_to_remove['users'].append({
+            'id':id,
+            'username':username
+        })
+
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'delete', SERVER+(COMPANY_ID % company_id)+USER, session=session, json=users_to_remove)
+    )
 
 
 def getCompany(company_id):
     return Observable.create(lambda observer:
-        rxRequest(observer, 'get', SERVER+COMPANY_ID % company_id))
+        rxRequest(observer, 'get', SERVER+COMPANY_ID % company_id)
+    )
 
 
 def getCompanyFullchain(compnay_id, session):
     return Observable.create(lambda observer:
-        rxRequest(observer, 'get', SERVER+(COMPANY_ID% compnay_id)+FULLCHAIN, session=session))
+        rxRequest(observer, 'get', SERVER+(COMPANY_ID % compnay_id)+FULLCHAIN, session=session)
+    )
 
 
-def addTransaction():
-    pass
+def postTransaction(company_id, to, recipient, amount, session=None):
+    body = {
+        'to':to,
+        'recipient':recipient,
+        'amount':amount
+    }
+
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'post', SERVER+(COMPANY_ID % company_id)+POST, session=session, json=body)
+    )
 
 
-def getCompanyUpdatedChain():
-    pass
+def getCompanyUpdatedChain(company_id, prev_hash, current_transaction, session=None):
+    body = {
+        'prev_hash':prev_hash,
+        'current_transaction':current_transaction
+    }
+
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'post', SERVER+(COMPANY_ID % company_id)+UPDATE, session=session, json=body)
+    )
 
 
-def verifyCompanyChain():
-    pass
+def verifyCompanyChain(company_id, prev_hash, current_transaction, session=None):
+    body = {
+        'prev_hash': prev_hash,
+        'current_transaction': current_transaction
+    }
+
+    return Observable.create(lambda observer:
+         rxRequest(observer, 'post', SERVER + (COMPANY_ID % company_id) + VERIFY, session=session, json=body)
+    )
 
 
 def createUser(name, username, password, email=None):
@@ -78,15 +141,29 @@ def createUser(name, username, password, email=None):
         'password': password,
         'email': email
     }
-    return Observable.create(lambda observer: rxRequest(observer, 'post', SERVER+USER, json=body))
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'post', SERVER+USER, json=body)
+    )
 
 
-def updateUser():
-    pass
+def updateUser(name=None, email=None, password=None, session=None):
+    body = {}
+    if name is not None:
+        body['name'] = name
+    if email is not None:
+        body['email'] = email
+    if password is not None:
+        body['password'] = password
+
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'put', SERVER+USER, session=session, json=body)
+    )
 
 
 def getUser(user_id):
-    return Observable.create(lambda observer: rxRequest(observer, 'get', SERVER+USER_ID % user_id))
+    return Observable.create(lambda observer:
+        rxRequest(observer, 'get', SERVER+USER_ID % user_id)
+    )
 
 from pprint import pprint
 
@@ -101,8 +178,7 @@ def rxRequest(observer, method, url, session=None, refresh_token=False, **kwargs
                 token += session.session_token
             headers['Authorization'] = token
         return headers
-    
-    print("REQUEST SENT")
+
     response = requests.request(method, url, headers=generateHeaders(), **kwargs)
 
     def observerCallback(r):
@@ -115,7 +191,6 @@ def rxRequest(observer, method, url, session=None, refresh_token=False, **kwargs
 
     # Unauthorized access
     if response.status_code == 401:
-        print('UNAUTHORIZED ACCESS')
         if session is not None:
             refresh(session).subscribe(
                 on_next=lambda response:session.updateSession(response['body']['session']),

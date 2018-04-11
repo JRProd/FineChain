@@ -15,13 +15,12 @@ class Session():
         self.session_token = token
 
 if __name__ == '__main__':
-    print('STARTING API TESTING')
     session = Session(
-        refresh='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MjMxNDQzNjAsImlkZW50aXR5Ijp7InVzZXJfaWQiOjQ4fSwianRpIjoiNTVhYjc4MjgtZWU3Mi00OTY3LWI5Y2MtMjJlZTUwMjdmYzJiIiwibmJmIjoxNTIzMTQ0MzYwLCJleHAiOjE1MjU3MzYzNjAsInR5cGUiOiJyZWZyZXNoIn0.jSo8Ts92ZQcWMLtfE5zYTThGtF8WFsPKV0_jwt3y_Wk',
-        session='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MjMxNDQzNjAsImlkZW50aXR5Ijp7InVzZXJfaWQiOjQ4fSwidHlwZSI6ImFjY2VzcyIsImp0aSI6IjIwMmMwMzkzLTk5MzgtNGU2Mi1hMTI2LWE5YmFiNzE3NTgyZSIsIm5iZiI6MTUyMzE0NDM2MCwiZXhwIjoxNTIzMTQ1MjYwLCJmcmVzaCI6ZmFsc2V9.qO83bH9OQ60_cTNl7oO_jxCdDpYLP3htELcuL-nvfZM'
+        refresh="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjZmY4ODdmMi02ZTA0LTQxNmUtOTc2NC03NjcyMTM3NDBmZGYiLCJuYmYiOjE1MjM0NzQ0ODQsImV4cCI6MTUyNjA2NjQ4NCwiaWF0IjoxNTIzNDc0NDg0LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjo0OX0sInR5cGUiOiJyZWZyZXNoIn0.agwsag5AVUfx_gCKTzgRCs-RtCQua6LwZmO4T5REfqY",
+        session="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzMzZiOTc2Yi1lNTQ1LTQwNzctOTNhMS03MTJlNTQyNWQ5OTYiLCJuYmYiOjE1MjM0NzQ0ODQsImV4cCI6MTUyMzQ3NTM4NCwiaWF0IjoxNTIzNDc0NDg0LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjo0OX0sInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6ZmFsc2V9.vmd7C-acgvyWEEOYAt9rmbRqkQetQF9EsMq9cp8irFw"
     )
 
-    response = API.getUser(18).subscribe(on_next=lambda response: {
-        print(response)
+    response = API.updateUser('TestUser1', session=session).subscribe(on_next=lambda response: {
+        pprint(response)
     })
 
