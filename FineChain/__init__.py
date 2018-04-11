@@ -55,7 +55,7 @@ def pageNotFound(err):
 # Default JWT resposne
 @jwt.expired_token_loader
 def expiredTokenLoaderCallback():
-    return basicUtils.expired_token.toJson()
+    return basicUtils.expired_token.toJson(), 401
 
 #####################
 ## REFRESH Endpoin ##
@@ -169,17 +169,13 @@ def updateCompany():
             updated = sqlUtils.updateCompanyInfo(company_id=user['company_id'], data=infoUpdate)
             updated['updated_at'] = datetime.now()
 
-            updateAdmin = False
             # Specifically check if admin is being updated
             if 'admin' in body:
-                admim = sqlUtils.updateCompanyAdmin(
+                admin = sqlUtils.updateCompanyAdmin(
                     company_id=user['company_id'],
-                    id=body['admin']['id'],
+                    user_id=body['admin']['id'],
                     username=body['admin']['username']
                 )
-                updateAdmin = True
-
-            if updateAdmin:
                 updated['admin']=admin
 
             return basicUtils.MessageResponse(
