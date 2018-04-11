@@ -1,18 +1,8 @@
 from Blockchain.Blockchain import Blockchain
 from FineChainAPI import API
+from FineChainAPI.Session import Session
 
 from pprint import pprint
-import pickle, codecs
-
-class Session():
-    session_token =''
-    refresh_token = ''
-    def __init__(self, session, refresh):
-        self.session_token = session
-        self.refresh_token = refresh
-
-    def updateSession(self, token):
-        self.session_token = token
 
 if __name__ == '__main__':
     session = Session(
