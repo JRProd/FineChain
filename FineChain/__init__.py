@@ -341,6 +341,7 @@ def verifyBlockchain(company_id):
 
     if session is not None:
         if authUtils.userPartOfCompany(session['user_id'], company_id):
+            # Verify that the hash and current transaction are the same
             if blockchainBuffer.verify(company_id, body['prev_hash'], body['current_transaction']):
                 return basicUtils.MessageResponse(
                     message='Current hash matches the serverside hash',
@@ -371,8 +372,10 @@ def updateUser():
         if 'email' in body:
             email = body['email']
 
+        # Hashes the password
         password = authUtils.hash(body['password'])
 
+        # Adds the user to the system
         user = sqlUtils.postUser(
             name=body['name'],
             email=email,
@@ -396,10 +399,12 @@ def updateUser():
                 if change in body:
                     infoUpdate[change] = body[change]
 
+            # Update the user's info
             updated = sqlUtils.updateUserInfo(user_id=session['user_id'], data=infoUpdate)
             updated['updated_at'] = datetime.now()
 
             updatePass = False
+            # Password specifc update
             if 'password' in body:
                 password = authUtils.hash(body['password'])
                 sqlUtils.updateUserPassword(id=session['user_id'], password=password)
@@ -421,6 +426,7 @@ def updateUser():
 @app.route('/user/<int:user_id>', methods=['GET'])
 def getUser(user_id):
     try:
+        # Get user info
         return basicUtils.MessageResponse(
             message='Successfully retrieved the USER',
             body=sqlUtils.getUserWithId(user_id)
