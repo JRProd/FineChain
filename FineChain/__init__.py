@@ -55,7 +55,7 @@ def pageNotFound(err):
 # Default JWT resposne
 @jwt.expired_token_loader
 def expiredTokenLoaderCallback():
-    return basicUtils.expired_token.toJson()
+    return basicUtils.expired_token.toJson(), 401
 
 #####################
 ## REFRESH Endpoin ##
@@ -90,6 +90,7 @@ def authenticate():
         if success:
             # Create a new session
             session = {
+                'user_id':user_id,
                 'session':JWT.create_access_token(identity={'user_id':user_id}),
                 'refresh':JWT.create_refresh_token(identity={'user_id':user_id})
             }
@@ -169,17 +170,13 @@ def updateCompany():
             updated = sqlUtils.updateCompanyInfo(company_id=user['company_id'], data=infoUpdate)
             updated['updated_at'] = datetime.now()
 
-            updateAdmin = False
             # Specifically check if admin is being updated
             if 'admin' in body:
-                admim = sqlUtils.updateCompanyAdmin(
+                admin = sqlUtils.updateCompanyAdmin(
                     company_id=user['company_id'],
-                    id=body['admin']['id'],
+                    user_id=body['admin']['id'],
                     username=body['admin']['username']
                 )
-                updateAdmin = True
-
-            if updateAdmin:
                 updated['admin']=admin
 
             return basicUtils.MessageResponse(
@@ -203,10 +200,10 @@ def getCompany(company_id):
             value=company_id
         ).toJson(), 404
 
-@app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
+@app.route('/company/<int:company_id>/user', methods=['PUT', 'DELETE'])
 @JWT.jwt_required
 def addUserToCompany(company_id):
-    if request.method == 'POST':
+    if request.method == 'PUT':
         session = JWT.get_jwt_identity()
         body = request.get_json()
 

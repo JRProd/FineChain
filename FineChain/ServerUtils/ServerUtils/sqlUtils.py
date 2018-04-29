@@ -23,7 +23,7 @@ update_company_info =       ("UPDATE companys "
                              "WHERE id=%(id)s")
 
 update_company_admin =      ("UPDATE companys "
-                             "SET admin_id=%(admin)s "
+                             "SET admin_id=%(admin_id)s "
                              "WHERE id=%(id)s")
 
 get_current_hash =          ("SELECT current_hash"
@@ -128,18 +128,24 @@ def updateCompanyInfo(company_id, data):
 
     return updatedCompany
 
-def updateComapanyAdmin(company_id, user_id, username):
+def updateCompanyAdmin(company_id, user_id, username):
+
     cursor = connection.cursor()
 
     admin = getUserWithId(user_id);
     if admin['username'] != username:
         #TODO: Define errors for not matching username
         pass
-    if admin['compnay_id'] != company_id:
+    if admin['company_id'] != company_id:
         #TODO: User must be part of company to become admin
         pass
 
-    cursor.execute(update_user_password, {'admin_id':admin['id']})
+    queryValues = {
+        'admin_id':admin['id'],
+        'id':company_id,
+    }
+
+    cursor.execute(update_company_admin, queryValues)
 
     connection.commit()
     cursor.close()
