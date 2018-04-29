@@ -90,6 +90,7 @@ def authenticate():
         if success:
             # Create a new session
             session = {
+                'user_id':user_id,
                 'session':JWT.create_access_token(identity={'user_id':user_id}),
                 'refresh':JWT.create_refresh_token(identity={'user_id':user_id})
             }
