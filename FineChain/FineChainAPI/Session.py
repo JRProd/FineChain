@@ -2,9 +2,15 @@ class Session():
     session_token = ''
     refresh_token = ''
 
-    def __init__(self, session, refresh):
+    def __init__(self, session=None, refresh=None):
         self.session_token = session
         self.refresh_token = refresh
+
+    def setSessionToken(self, session):
+        self.session_token = session
+
+    def setRefreshToken(self, refresh):
+        self.refresh_token = session
 
     def getSessionToken(self):
         return self.session_token
