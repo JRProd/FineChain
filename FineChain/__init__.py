@@ -200,10 +200,10 @@ def getCompany(company_id):
             value=company_id
         ).toJson(), 404
 
-@app.route('/company/<int:company_id>/user', methods=['POST', 'DELETE'])
+@app.route('/company/<int:company_id>/user', methods=['PUT', 'DELETE'])
 @JWT.jwt_required
 def addUserToCompany(company_id):
-    if request.method == 'POST':
+    if request.method == 'PUT':
         session = JWT.get_jwt_identity()
         body = request.get_json()
 
