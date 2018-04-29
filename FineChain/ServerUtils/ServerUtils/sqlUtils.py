@@ -129,6 +129,7 @@ def updateCompanyInfo(company_id, data):
     return updatedCompany
 
 def updateCompanyAdmin(company_id, user_id, username):
+
     cursor = connection.cursor()
 
     admin = getUserWithId(user_id);
