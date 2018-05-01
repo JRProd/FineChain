@@ -199,7 +199,8 @@ class MainFrame(Frame):
         print(response)
 
     def print_companychain_helper(self, response):
-        print(response)
+        chain = pickle.loads(response.content)
+        pprint(vars(chain))
 
 
 class ErrorLoginFrame(Frame):
