@@ -10,7 +10,7 @@ class Session():
         self.session_token = session
 
     def setRefreshToken(self, refresh):
-        self.refresh_token = session
+        self.refresh_token = refresh
 
     def getSessionToken(self):
         return self.session_token

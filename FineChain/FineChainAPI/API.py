@@ -4,14 +4,14 @@ import requests
 SERVER =     'http://159.89.159.158'
 AUTH =       '/auth'
 COMPANY =    '/company'
-COMPANY_ID = '/company/%i'
+COMPANY_ID = '/company/%s'
 FULLCHAIN =  '/fullchain'
 POST =       '/post'
 UPDATE =     '/update'
 VERIFY =     '/verify'
 REFRESH =    '/refresh'
 USER =       '/user'
-USER_ID=     '/user/%i'
+USER_ID=     '/user/%s'
 
 def login(username, password):
     body = {
