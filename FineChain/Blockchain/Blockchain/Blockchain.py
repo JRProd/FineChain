@@ -128,27 +128,6 @@ class Blockchain:
             currentindex += 1
             return True
 
-    def fix_collision(self):
-        # If there's a multiple blockchains detected, take the longest one.
-        # return: true if chain is replaced, false if chain is not
-
-        network = self.nodes
-        longest = len(self.chain)
-        newchain = None
-        for node in network:
-                        pass
-#            response = requests.get(f'http://{node}/chain') #change to https later?
-#            if response.status_code == 200:
-#                length = response.json()['length']
-#                chain = response.json()['chain']
-#                if length > longest and self.valid_chain(chain):
-#                    longest = length
-#                    newchain = chain
-        if newchain:
-            self.chain = newchain
-            return True
-        return False
-
     def verify(self, prev_hash, current_transaction):
         return prev_hash == self.prev_block()['prev_hash'] and current_transaction+1 == len(self.current_transactions)
 
