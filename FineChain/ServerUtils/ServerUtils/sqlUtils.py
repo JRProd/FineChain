@@ -147,7 +147,7 @@ def addUserToCompany(company_id, user_id, username):
     try:
         user = getUserWithId(user_id)
     except ValueError as e:
-        return False, e
+        return False, str(e)
 
     if user['username'] != username:
         return False, 'ID and username must match'
@@ -170,7 +170,7 @@ def removeUserFromCompany(company_id, user_id, username):
     try:
         user = getUserWithId(user_id)
     except ValueError as e:
-        return False, e
+        return False, str(e)
 
     if user['username'] != username:
         return False, 'ID and username must match'
