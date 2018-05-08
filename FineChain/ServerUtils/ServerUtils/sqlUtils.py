@@ -54,6 +54,8 @@ update_user_password =      ("UPDATE users "
                              "SET password=%(password)s "
                              "WHERE id=%(id)s")
 
+# Gets a company from an ID
+#   company_id* - Company to get
 def getCompanyWithId(company_id):
     cursor = connection.cursor()
 
@@ -86,9 +88,13 @@ def getCompanyWithId(company_id):
 
     return returnVal
 
+# Creates a new company
+#   name*       - The name of the company
+#   admin_id*   - The new admin of the company
 def postCompany(name, admin_id):
     cursor = connection.cursor()
 
+    # Post a company to the server
     cursor.execute(insert_company, {'name':name, 'admin_id':admin_id})
     id = cursor.lastrowid
 
@@ -103,14 +109,17 @@ def postCompany(name, admin_id):
 
     return returnVal
 
+# Update company information
+#   company_id*    - ID to update
+#   data*       - Any updatable data on the server
 def updateCompanyInfo(company_id, data):
     cursor= connection.cursor()
     updatedCompany = getCompanyWithId(company_id)
     updatedCompany.pop('admin', None)
     updatedCompany.pop('user_ids', None)
 
+    # Get all of the updated values
     for key, value in data.items():
-#        if key in updatedCompany:
          updatedCompany[key] = value
 
     cursor.execute(update_company_info, updatedCompany)
@@ -120,9 +129,14 @@ def updateCompanyInfo(company_id, data):
 
     return updatedCompany
 
+# Updates who is in control of the company
+#   company_id*     - Company to update
+#   user_id*        - The User to be the new admin
+#   username*       - Username for verification
 def updateCompanyAdmin(company_id, user_id, username):
     cursor = connection.cursor()
 
+    # Check if values are correct
     admin = getUserWithId(user_id);
     if admin['username'] != username:
         raise KeyError('Username given did not match ID given')
@@ -141,7 +155,10 @@ def updateCompanyAdmin(company_id, user_id, username):
 
     return admin;
 
-# Updates a user to reflect which company they are
+# Adds an authorized users from the company
+#   company_id*     - Company to modify
+#   user_id*        - Ids to be added
+#   username*       - usernames for verification
 def addUserToCompany(company_id, user_id, username):
     user = None
     try:
@@ -149,6 +166,7 @@ def addUserToCompany(company_id, user_id, username):
     except ValueError as e:
         return False, str(e)
 
+    # Check if values are correct
     if user['username'] != username:
         return False, 'ID and username must match'
     if user['company_id'] is not None:
@@ -165,6 +183,10 @@ def addUserToCompany(company_id, user_id, username):
 
     return True, returnVal
 
+# Removes an authorized users from the company
+#   company_id*     - Company to modify
+#   user_id*        - Ids to be added
+#   username*       - usernames for verification
 def removeUserFromCompany(company_id, user_id, username):
     user = None
     try:
@@ -172,6 +194,7 @@ def removeUserFromCompany(company_id, user_id, username):
     except ValueError as e:
         return False, str(e)
 
+    # Check if values are correct
     if user['username'] != username:
         return False, 'ID and username must match'
     if user['company_id'] != company_id:
@@ -188,6 +211,8 @@ def removeUserFromCompany(company_id, user_id, username):
 
     return True, returnVal
 
+# Gets the blockchain from the MySQL server
+#   company_id*     - Company to get blockchain from
 def getBlockchainHash(company_id):
     cursor = connection.cursor()
 
@@ -195,6 +220,8 @@ def getBlockchainHash(company_id):
 
     return currentHash[0]
 
+# Creates blockchain in the MySQL server
+#   company_id*     - Company who created the blockchain
 def postBlockchain(company_id):
     cursor = connection.cursor()
 
@@ -234,6 +261,8 @@ def getUserWithId(user_id):
     cursor.close()
     return returnVal
 
+# Gets the user profile from a Username
+#   username*    - username used in search
 def getUserWithUsername(username):
     cursor = connection.cursor()
 
@@ -290,6 +319,9 @@ def postUser(name, email, username, password):
     # Return the new users ID
     return returnVal
 
+# Update users information
+#   user_id*    - ID to update
+#   data*       - Any updatable data on the server
 def updateUserInfo(user_id, data):
     cursor= connection.cursor()
     updatedUser = getUserWithId(user_id)
@@ -304,6 +336,9 @@ def updateUserInfo(user_id, data):
 
     return updatedUser
 
+# Updates a users password
+#   user_id*     - User's ID
+#   password*    - New Password
 def updateUserPassword(user_id, password):
     cursor= connection.cursor()
 

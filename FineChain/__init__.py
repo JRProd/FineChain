@@ -35,16 +35,6 @@ blockchainBuffer = BlockchainBuffer(
     company_loc=app.config['COMPANY_LOCATION']
 )
 
-####################
-## TEST Endpoints ##
-####################
-@app.route('/')
-def home():
-    return "Homepage"
-@app.route('/isrunning')
-def isRunning():
-    return 'Yes, the flask app is running!'
-
 # Default 404 response
 @app.errorhandler(404)
 def pageNotFound(err):
@@ -372,8 +362,6 @@ def verifyBlockchain(company_id):
 #####################
 ##  USER Endpoints ##
 #####################
-# Define sql commands commonly used
-
 @app.route('/user', methods=['POST', 'PUT'])
 @JWT.jwt_optional
 def updateUser():

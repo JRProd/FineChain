@@ -3,27 +3,27 @@ from random import random
 
 from ServerUtils import sqlUtils
 
+# Import a cryptographically secure password hashing library 
 from passlib.hash import pbkdf2_sha512 as sha512
 
 def authenticate(username, challenge):
-    user = sqlUtils.getUserWithUsername(username)
+    try:
+        # Get the user with associated username
+        user = sqlUtils.getUserWithUsername(username)
+        actual = user['password']
 
-    #TODO Handle errors like no user found
-    actual = user['password']
-
-    #TODO Authenticate should not return true. TESTING
-    #return (True, user['id'])
-    return (compare(challenge, actual), user['id'])
+        # Compare the challenge and the actual password
+        return (compare(challenge, actual), user['id'])
+    except ValueError as e:
+        return False
 
 def compare(challenge, actual):
     return sha512.verify(challenge, actual)
 
-def generateToken(seed):
-    return hashlib.md5(str(seed).encode('utf-8')).hexdigest()
-
 def hash(password):
     return sha512.hash(password)
 
+# Quick check if user is part of the company
 def userPartOfCompany(user_id, company_id):
     user = sqlUtils.getUserWithId(user_id)
     return user['company_id'] == company_id

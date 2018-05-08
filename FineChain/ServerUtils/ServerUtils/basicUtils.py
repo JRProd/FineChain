@@ -1,5 +1,6 @@
 from flask import jsonify
 
+# Basic message response
 class MessageResponse:
     message = 'Failure'
     body = None
@@ -14,14 +15,17 @@ class MessageResponse:
             body=self.body
         )
 
+# Predefined message
 unauthroized_response = MessageResponse(
     message='Unauthorized access'
 )
 
+# Predefinced message
 expired_token = MessageResponse(
     message='Your token has expired'
 )
 
+# Quick 404 response
 def notFoundResponse(object=None, value=None):
     if object is None:
         object = 'Object'
