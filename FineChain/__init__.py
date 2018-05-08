@@ -181,12 +181,12 @@ def updateCompany():
                 except KeyError as e:
                     updated['admin']={
                         'Success':'False',
-                        'Reason':e
+                        'Reason':str(e)
                     }
                 except ValueError as e:
                     updated['admin']={
                         'Success':'False',
-                        'Reason':e
+                        'Reason':str(e)
                     }
 
             return basicUtils.MessageResponse(
