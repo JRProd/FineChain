@@ -171,12 +171,23 @@ def updateCompany():
 
             # Specifically check if admin is being updated
             if 'admin' in body:
-                admin = sqlUtils.updateCompanyAdmin(
-                    company_id=user['company_id'],
-                    user_id=body['admin']['id'],
-                    username=body['admin']['username']
-                )
-                updated['admin']=admin
+                try:
+                    admin = sqlUtils.updateCompanyAdmin(
+                        company_id=user['company_id'],
+                        user_id=body['admin']['id'],
+                        username=body['admin']['username']
+                    )
+                    updated['admin']=admin
+                except KeyError as e:
+                    updated['admin']={
+                        'Success':'False',
+                        'Reason':e
+                    }
+                except ValueError as e:
+                    updated['admin']={
+                        'Success':'False',
+                        'Reason':e
+                    }
 
             return basicUtils.MessageResponse(
                 message='Company Updated',
