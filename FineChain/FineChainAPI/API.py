@@ -1,17 +1,18 @@
 from rx import Observable
 import requests
 
+# Predefined enpoints
 SERVER =     'http://159.89.159.158'
 AUTH =       '/auth'
 COMPANY =    '/company'
-COMPANY_ID = '/company/%i'
+COMPANY_ID = '/company/%s'
 FULLCHAIN =  '/fullchain'
 POST =       '/post'
 UPDATE =     '/update'
 VERIFY =     '/verify'
 REFRESH =    '/refresh'
 USER =       '/user'
-USER_ID=     '/user/%i'
+USER_ID=     '/user/%s'
 
 def login(username, password):
     body = {
@@ -42,6 +43,7 @@ def updateCompany(name, admin=None, session=None):
     body = {
         'name':name
     }
+    # Add admin to update if updating admin
     if admin is not None:
         body['admin'] = admin
 
@@ -57,6 +59,7 @@ def addUsersToCompany(company_id, users, session=None):
         if len(user) != 2:
             raise ValueError('Each tuple can only contain two entries')
 
+    # Add users in the correct format
     users_to_add = {'users':[]}
     for id, username in users:
         users_to_add['users'].append({
@@ -76,6 +79,7 @@ def removeUsersFromCompany(company_id, users, session=None):
         if len(user) != 2:
             raise ValueError('Each tuple can only contain two entries')
 
+    # Add users in the correct format
     users_to_remove = {'users':[]}
     for id, username in users:
         users_to_remove['users'].append({
@@ -147,6 +151,7 @@ def createUser(name, username, password, email=None):
 
 
 def updateUser(name=None, email=None, password=None, session=None):
+    # Build what is needed to be updated
     body = {}
     if name is not None:
         body['name'] = name
@@ -168,10 +173,12 @@ def getUser(user_id):
 from pprint import pprint
 
 def rxRequest(observer, method, url, session=None, refresh_token=False, **kwargs):
+    # Create the auth headers if required
     def generateHeaders():
         headers = {}
         if session is not None:
             token = 'Bearer '
+            # Switches between refresh or session token used
             if refresh_token == True:
                 token += session.refresh_token
             else:
@@ -179,21 +186,29 @@ def rxRequest(observer, method, url, session=None, refresh_token=False, **kwargs
             headers['Authorization'] = token
         return headers
 
+    # Send HTTPS request
     response = requests.request(method, url, headers=generateHeaders(), **kwargs)
 
+    # Define a callback if error response
     def observerCallback(r):
+        # Convert to json
         try:
             json = r.json()
             observer.on_next(json)
+        # Or just return the response
         except ValueError as e:
             observer.on_next(r)
+        # Complete the observable
         observer.on_completed()
 
     # Unauthorized access
     if response.status_code == 401:
         if session is not None:
+            # Send another request to refresh the token
             refresh(session).subscribe(
+                # On refresh, update the session class
                 on_next=lambda response:session.updateSession(response['body']['session']),
+                # Once the session is updated, try the call again
                 on_completed=lambda: observerCallback(requests.request(method, url, headers=generateHeaders(), **kwargs))
             )
 
