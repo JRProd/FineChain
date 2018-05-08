@@ -143,7 +143,12 @@ def updateCompanyAdmin(company_id, user_id, username):
 
 # Updates a user to reflect which company they are
 def addUserToCompany(company_id, user_id, username):
-    user = getUserWithId(user_id)
+    user = None
+    try:
+        user = getUserWithId(user_id)
+    except ValueError as e:
+        return False, e
+
     if user['username'] != username:
         return False, 'ID and username must match'
     if user['company_id'] is not None:
@@ -161,7 +166,12 @@ def addUserToCompany(company_id, user_id, username):
     return True, returnVal
 
 def removeUserFromCompany(company_id, user_id, username):
-    user = getUserWithId(user_id)
+    user = None
+    try:
+        user = getUserWithId(user_id)
+    except ValueError as e:
+        return False, e
+
     if user['username'] != username:
         return False, 'ID and username must match'
     if user['company_id'] != company_id:
