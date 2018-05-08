@@ -92,18 +92,10 @@ def postCompany(name, admin_id):
     cursor.execute(insert_company, {'name':name, 'admin_id':admin_id})
     id = cursor.lastrowid
 
-    #TODO: Add the company_id to the admin
-
-    admin = getUserWithId(admin_id)
-    # Remove unimportant values from the admin
-    admin.pop('deleted_at', None)
-
     returnVal = {
         'id':id,
         'name':name,
-        'admin':admin,
         'user_ids':[admin_id],
-        'blockchain':{},
     }
 
     connection.commit()
@@ -133,11 +125,9 @@ def updateCompanyAdmin(company_id, user_id, username):
 
     admin = getUserWithId(user_id);
     if admin['username'] != username:
-        #TODO: Define errors for not matching username
-        pass
+        raise KeyError('Username given did not match ID given')
     if admin['company_id'] != company_id:
-        #TODO: User must be part of company to become admin
-        pass
+        raise ValueError('User must be part of the company to be promoted')
 
     queryValues = {
         'admin_id':admin['id'],
@@ -153,7 +143,12 @@ def updateCompanyAdmin(company_id, user_id, username):
 
 # Updates a user to reflect which company they are
 def addUserToCompany(company_id, user_id, username):
-    user = getUserWithId(user_id)
+    user = None
+    try:
+        user = getUserWithId(user_id)
+    except ValueError as e:
+        return False, str(e)
+
     if user['username'] != username:
         return False, 'ID and username must match'
     if user['company_id'] is not None:
@@ -171,7 +166,12 @@ def addUserToCompany(company_id, user_id, username):
     return True, returnVal
 
 def removeUserFromCompany(company_id, user_id, username):
-    user = getUserWithId(user_id)
+    user = None
+    try:
+        user = getUserWithId(user_id)
+    except ValueError as e:
+        return False, str(e)
+
     if user['username'] != username:
         return False, 'ID and username must match'
     if user['company_id'] != company_id:
