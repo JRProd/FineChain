@@ -35,16 +35,6 @@ blockchainBuffer = BlockchainBuffer(
     company_loc=app.config['COMPANY_LOCATION']
 )
 
-####################
-## TEST Endpoints ##
-####################
-@app.route('/')
-def home():
-    return "Homepage"
-@app.route('/isrunning')
-def isRunning():
-    return 'Yes, the flask app is running!'
-
 # Default 404 response
 @app.errorhandler(404)
 def pageNotFound(err):
@@ -172,12 +162,23 @@ def updateCompany():
 
             # Specifically check if admin is being updated
             if 'admin' in body:
-                admin = sqlUtils.updateCompanyAdmin(
-                    company_id=user['company_id'],
-                    user_id=body['admin']['id'],
-                    username=body['admin']['username']
-                )
-                updated['admin']=admin
+                try:
+                    admin = sqlUtils.updateCompanyAdmin(
+                        company_id=user['company_id'],
+                        user_id=body['admin']['id'],
+                        username=body['admin']['username']
+                    )
+                    updated['admin']=admin
+                except KeyError as e:
+                    updated['admin']={
+                        'Success':'False',
+                        'Reason':str(e)
+                    }
+                except ValueError as e:
+                    updated['admin']={
+                        'Success':'False',
+                        'Reason':str(e)
+                    }
 
             return basicUtils.MessageResponse(
                 message='Company Updated',
@@ -362,8 +363,6 @@ def verifyBlockchain(company_id):
 #####################
 ##  USER Endpoints ##
 #####################
-# Define sql commands commonly used
-
 @app.route('/user', methods=['POST', 'PUT'])
 @JWT.jwt_optional
 def updateUser():
