@@ -56,7 +56,7 @@ class LoginFrame(Frame):
 
         self.label_username = Label(self, text="Username")
         self.label_password = Label(self, text="Password")
-        self.label_title = Label(self) #could probably remove this and replace with padding
+        self.label_title = Label(self)
 
         self.entry_username = Entry(self)
         self.entry_password = Entry(self, show="*")
@@ -67,16 +67,10 @@ class LoginFrame(Frame):
         self.entry_username.grid(row=1, column=1)
         self.entry_password.grid(row=2, column=1)
 
-        #self.checkbox = Checkbutton(self, text="Keep me logged in")
-        #self.checkbox.grid(columnspan=2)
-
         self.logbtn = Button(self, text="Login", command=self._login_btn_clicked)
         self.logbtn.grid(columnspan=2)
         self.createusrbtn = Button(self, text="Create account", command=lambda: master.switch_frame(CreateAccountFrame, self.sessionid))
         self.createusrbtn.grid(columnspan=2)
-
-        #self.mainbtn = Button(self, text="Main Screen", command=lambda: master.switch_frame(MainFrame))
-        #self.mainbtn.grid(columnspan=2)
 
         self.pack()
 
@@ -90,14 +84,9 @@ class LoginFrame(Frame):
             self.user_id = response["body"]["user_id"]
             self.master.switch_frame(MainFrame, self.sessionid, self.user_id, self.refreshid)
             self.master.switch_frame(MainFrame, self.sessionid, self.user_id, self.refreshid)
-            #print(sessionid)
         else:
             self.master.switch_frame(ErrorLoginFrame)
             print(response)
-
-        #if(str(response) == )
-        #json_response = response.json()
-        #print(json_response)
 
     def _login_btn_clicked(self):
         self.username = self.entry_username.get()
@@ -109,30 +98,20 @@ class LoginFrame(Frame):
         else:
             self.master.switch_frame(ErrorLoginFrame)
 
-        #response = API.login(username, password).subscribe(on_next= lambda response: {
-        #    pprint(response)
-
-        #})
-
-        #display welcome in GUI if authenticated later
-
 class MainFrame(Frame):
     def __init__(self, master):
         super().__init__(master)
 
-        #print(master.get_session_id())
-        #print("this is a test of sessionid")
         self.sessionid = master.get_session_id()
         self.user_id = master.get_user_id()
         self.name = self.set_name()
         self.refreshid = master.get_refresh_id()
 
 
-        welcometext = "Welcome, %s" % (self.name)   #how the heck do i get a user's name from their session]
+        welcometext = "Welcome, %s" % (self.name)
         self.label_welcome = Label(self, text=welcometext)
         self.createusrbtn = Button(self, text="Create account", command=lambda: master.switch_frame(CreateAccountMainFrame, self.sessionid, self.user_id, self.refreshid))
         self.createcompbtn = Button(self, text="Create company", command=lambda: master.switch_frame(CreateCompanyFrame, self.sessionid, self.user_id, self.refreshid))
-        #self.updatecompbtn = Button(self, text="Update company", command=lambda: master.switch_frame(UpdateCompanyFrame, self.sessionid, self.user_id)) #add later
         self.usrtocompbtn = Button(self, text="Add/remove users to/from company", command=lambda: master.switch_frame(UsersToCompanyFrame, self.sessionid, self.user_id, self.refreshid))
 
         self.psttransaction = Button(self, text="Add transaction", command=lambda: master.switch_frame(PostTransactionFrame, self.sessionid, self.user_id, self.refreshid))
@@ -142,16 +121,14 @@ class MainFrame(Frame):
         self.label_getcompany = Label(self, text="Print company information to console")
         self.entry_getcompany = Entry(self)
         self.printcompbtn = Button(self, text="Print", command=self.print_company)
-        #self.logoffbtn.grid(columnspan=2)
 
 
 
         self.label_welcome.grid(row=0, column=2, sticky=E)
         self.createusrbtn.grid(row=1, column=0, sticky=E)
         self.createcompbtn.grid(row=2, column=0, sticky=E)
-        #self.updatecompbtn.grid(row=3, column=0, sticky=E)
         self.usrtocompbtn.grid(row=4, column=0, sticky=E)
-        self.psttransaction.grid(row=1, column=3, sticky=E)      #work on shifting these later
+        self.psttransaction.grid(row=1, column=3, sticky=E)
         self.logoffbtn.grid(row=2, column=3, sticky=E)
         self.label_getcompany.grid(row=8, column=2, sticky=E)
         self.entry_getcompany.grid(row=8, column=3, sticky=E)
@@ -179,8 +156,7 @@ class MainFrame(Frame):
 
 
     def _logoff_btn_clicked(self):
-        self.sessionid = None #delete the session
-        #print(sessionid)
+        self.sessionid = None
         self.master.switch_frame(LoginFrame)
 
     def print_company(self):
@@ -253,8 +229,6 @@ class CreateCompanyFrame(Frame):
         if str(response) == "<Response [500]>":
             self.master.switch_frame(ErrorCreateCompanyFrame)
         if response["message"] == "Successfully created new COMPANY":
-            #self.master.switch_frame(MainFrame)
-            #text = "Successfully created %s" % (response["body"]["username"])
             text = "Successfully created new company."
             self.label_createduser = Label(self, text=text)
         else:
@@ -314,12 +288,9 @@ class UsersToCompanyFrame(Frame):
         })
 
         return
-        #API.addUsersToCompany()
 
     def add_user_helper(self, response):
         print(response)
-        #if str(response) == "<Response [500]>":
-        #    self.master.switch_frame(ErrorCreateCompanyFrame)
 
 
     def remove_user(self):
@@ -414,7 +385,7 @@ class CreateAccountFrame(Frame):
         self.entry_name = Entry(self)
         self.entry_username = Entry(self)
         self.entry_password = Entry(self, show="*")
-        self.entry_email = Entry(self)      #add regex later?
+        self.entry_email = Entry(self)
 
         self.label_title.grid(row=0, column=1, sticky=E)
         self.label_name.grid(row=1, sticky=E)
@@ -448,8 +419,6 @@ class CreateAccountFrame(Frame):
         if str(response) == "<Response [500]>":
             self.master.switch_frame(ErrorCreateAccountFrame)
         if response["message"] == "Successfully created new USER":
-            #self.master.switch_frame(MainFrame)
-            #text = "Successfully created %s" % (response["body"]["username"])
             text = "Successfully created new user."
             self.label_createduser = Label(self, text=text)
             self.label_createduser.grid(row=5, column=1)
@@ -472,7 +441,7 @@ class CreateAccountMainFrame(Frame):
         self.entry_name = Entry(self)
         self.entry_username = Entry(self)
         self.entry_password = Entry(self, show="*")
-        self.entry_email = Entry(self)      #add regex later?
+        self.entry_email = Entry(self)
 
         self.label_title.grid(row=0, column=1, sticky=E)
         self.label_name.grid(row=1, sticky=E)
@@ -506,8 +475,6 @@ class CreateAccountMainFrame(Frame):
         if str(response) == "<Response [500]>":
             self.master.switch_frame(ErrorCreateAccountFrame)
         if response["message"] == "Successfully created new USER":
-            #self.master.switch_frame(MainFrame)
-            #text = "Successfully created %s" % (response["body"]["username"])
             text = "Successfully created new user."
             self.label_createduser = Label(self, text=text)
             self.label_createduser.grid(row=5, column=1)
@@ -531,8 +498,4 @@ class ErrorCreateAccountFrame(Frame):
 if __name__ == '__main__':
     app = MainApp()
     app.title("FineChain")
-    #app['SESSION'] = Session()
-    #app['SESSION'] . setsessiontokenthing()
-    #lf = LoginFrame(app)
-    #app.geometry('500x300')
     app.mainloop()
